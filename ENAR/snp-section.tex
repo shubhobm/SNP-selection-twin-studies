@@ -1,0 +1,71 @@
+\documentclass[fleqn,12pt]{article}
+
+\usepackage{mycommands,amssymb,amsmath,amsthm,color,pagesize,outlines,cite,subfigure}
+\usepackage[small]{caption}
+\usepackage[pdftex]{epsfig}
+\usepackage{hyperref} % for linking references 
+\hypersetup{ colorlinks = true, citecolor = blue, urlcolor = blue}
+\usepackage{stackrel}
+\usepackage{rotating} % sideways table
+
+\usepackage[round]{natbib}
+
+% for algorithm
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+
+%\addtolength{\evensidemargin}{-.5in}
+%\addtolength{\oddsidemargin}{-.5in}
+%\addtolength{\textwidth}{0.9in}
+%\addtolength{\textheight}{0.9in}
+%\addtolength{\topmargin}{-.4in}
+
+%% measurements for 1 inch margin
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.75in}
+\addtolength{\topmargin}{-.875in}
+\addtolength{\textheight}{1.75in}
+
+\usepackage{setspace}
+\doublespacing
+
+%\pagestyle{myheadings}
+%\markboth{}{\underline{{\bf Notes: (do not circulate)} \hspace{4.5cm} {\sc  Ansu Chatterjee} \hspace{0.25cm}}}
+
+%% Appendix theorem counter
+\usepackage{chngcntr}
+\usepackage{apptools}
+\AtAppendix{\counterwithin{Theorem}{section}}
+\numberwithin{equation}{section}
+
+\begin{document}
+
+\newtheorem{Theorem}{Theorem}[section]
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Conjecture}[Theorem]{Conjecture}
+\theoremstyle{definition} \newtheorem{Definition}[Theorem]{Definition}
+
+\title{Simultaneous Selection of Multiple Important Single Nucleotide Polymorphisms in Familial Genome Wide Association Studies Data}
+\date{}
+\author{(Author information blinded)}
+\maketitle
+
+\noindent\textbf{Abstract}: We propose a resampling-based fast variable selection technique for selecting important Single Nucleotide Polymorphisms (SNP) in multi-marker mixed effect models used in twin studies. Such studies are an established way of assessing gene-environment interactions and effects of SNPs on the development of behavioral disorders. Traditional methods of SNP detection based on single-marker analysis suffer from loss of power in twin studies due to multiple reasons, like weak signals of causal SNPs or multiple correlated SNPs. We adapt the recently proposed framework of $e$-values to address this. To our knowledge, this is the first method of SNP detection in twin studies that uses multi-SNP models. We achieve this through improvements in two aspects. Firstly, unlike other model selection techniques, our method only requires training a model with all possible predictors. Secondly, we utilize a fast and scalable bootstrap procedure that only requires Monte-Carlo sampling to obtain bootstrapped copies of the estimated vector of coefficients. Using this bootstrap sample, we obtain the $e$-value for each SNP, and select SNPs having $e$-values below a threshold. Numerical studies reveal our method to be more effective in detecting causal SNPs than either single-marker analysis on mixed models or model selection methods that ignore the familial dependency structure. We also use the $e$-values to perform gene-level analysis in a familial GWAS dataset and detect several SNPs that have potential effect on alcohol consumption in individuals.
+
+\noindent\textbf{Keywords}: Family data, twin studies, ACE model, model selection, bootstrap, data depth, alcoholism
+
+\newpage
+
+\input{Introduction}
+\input{model}
+\input{methods}
+\input{simulation}
+\input{realdata}
+\input{conclusion}
+
+\bibliographystyle{biometrics}
+\bibliography{snpbib}
+\end{document}

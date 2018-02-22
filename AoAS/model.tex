@@ -1,0 +1,46 @@
+\section{Data and model}
+\label{sec:modelSection}
+
+\subsection{The MCTFR data}
+The familial GWAS dataset collected and studied by Minnesota Center for Twin and Family Research (MCTFR)\citep{LiEtal11, MillerEtal12, McGueEtal13} consists of samples from three longitudinal studies conducted by the MCTFR: (1) the Minnesota Twin Family Study (MTFS: \cite{IaconoEtal99}) that covers twins and their parents, (2) the Sibling Interaction and Behavior Study (SIBS: \cite{McGueEtal07}) that includes adopted and biological sibling pairs and their parents, and (3) the enrichment study (ES: \cite{KeyesEtal09}) that extended the MTFS by oversampling 11 year old twins who are highly likely to develop substance abuse. While 9827 individuals completed the initial assessments for participation in the study, after several steps of screening \citep{MillerEtal12} the final sample consisted of 7605 Caucasian individuals clustered in 2151 nuclear families. This consisted of 1109 families where the children are identical twins, 577 families with non-identical twins, 210 familes with adopted children, 162 families with non-twin biological siblings, and 93 families wher one child is adopted while the other is the biological child of the parents.
+
+DNA samples collected from the subjects were analyzed using Illumina's Human660W-Quad Array, and after standard quality control steps \citep{MillerEtal12}, 527,829 SNPs were retained. Covariates for each sample included age, sex, birth year, generation (parent or offspring), as well as two-way interactions between generation and other three covariates each. Five quantitative phenotypes measuring substance use disorders were studied in this GWAS: (1) Nicotine dependence, (2) Alcohol consumption, (3) Alcohol dependence, (4) Illegal drug usage, and (5) Behavioral disinhibition. The response variables corresponding to these phenotypes are derived from questionnaires using a hierarchical approach based on factor analysis \citep{HicksEtal11}.
+
+A detailed description of the data is available  in \cite{MillerEtal12}. Several studies reported SNPs associated with phenotypes collected in MCTFR study \citep{LiEtal11, McGueEtal13, CoombesBasuMcGue17}. \cite{LiEtal11} used RFGLS to detect association between height and genetic variants through single-SNP analysis, while \cite{McGueEtal13} used the same method to study SNPs influencing the development of all five indicators of behavioral disinhibition mentioned above. \cite{IronsThesis12} focused on the effect of several factors affecting alcohol use in the study population, namely the effects of polymorphisms in the ALDH2 gene and the GABA system genes, as well as the effect of early exposure to alcohols as adolescents to adult outcomes. Finally \cite{CoombesBasuMcGue17} used a bootstrap-based combination test and a sequential score test to evaluate gene-environment interactions for alcohol consumption.
+
+\subsection{Statistical model}
+We use a Linear Mixed Model (LMM) with three variance components accounting for several potential sources of variation to model effect of SNPs behind a quantitative phenotype. This is known as \textit{ACE model} in the literature \citep{KohlerEtal11}. While the-state-of-the-art focuses on detection of a {\it single variant at a time}, we will incorporate \textit{all} SNPs genotyped within a gene (or group of genes in some cases) as set of fixed effects in a \textit{single model}.
+
+Our model fitting process is invariant to pedigree sizes. In the present context we assume nuclear pedigrees, as previously implemented by \cite{ChenAbecasis07,LiEtal11,McGueEtal13}. Suppose there are $m$ families in total, with the $i^{\Th}$ pedigree containing $n_i$ individuals. Denote by $\bfy_i = (y_{i 1}, \ldots, y_{i n_i})^T $ the quantitative trait values for individuals in that pedigree, while the matrix $\bfG_i \in \BR^{ n_i \times p_g}$ contains their genotypes for a number of SNPs. Let $\bfC_i \in \BR^{ n_i \times p}$ denote the data on $p$ covariates for individuals in the pedigree $i$. Given these, we consider the following model.
+%
+\begin{align}\label{eqn:LMMeqn}
+\bfY_i = \alpha + \bfG_i \bfbeta_g + \bfC_i \bfbeta_c + \bfepsilon_i
+\end{align}
+%
+with $\alpha$ the intercept term, $\bfbeta_g$ and $\bfbeta_c$ fixed coefficient terms corresponding to the multiple SNPs and covariates, respectively, and $\bfepsilon_i \sim \cN_{n_i} ({\bf 0}, \bfV_i)$ the random error term. To account for the within-family dependency structure, we break up the random error variance into three independent components:
+%
+\begin{align}\label{eqn:partsOfV}
+\bfV_i = \sigma_a^2 \bfPhi_i + \sigma_c^2 {\bf 1} {\bf 1}^T + \sigma_e^2 \bfI_{n_i}
+\end{align}
+%
+The first component above is a within-family random effect term to account for polygenic effects. The matrix $\bfPhi_i$ is the relationship matrix within the $i^{\Th}$ pedigree. Its $(s,t)^{\Th}$ element represents two times the kinship coefficient, which is the probability that two alleles, one randomly chosen from individual $s$ in pedigree $i$ and the other from individual $t$, are `identical by descent', i.e. come from same common ancestor \citep{KohlerEtal11}. The second variance component accounts for shared environmental effect within each family, while the third term quantifies other sources of variation unique to an individual.
+
+Following basic probability, the kinship coefficient of a parent-child pair is 1/4, a full sibling pair or non-identical (or dizygous = DZ) twins is 1/4, and for identical (or monozygous = MZ) twins is 1/2 in a nuclear pedigree. Following this, we can construct the $\bfPhi_i$ matrices for different types of families:
+%
+\begin{align*}
+\bfPhi_{MZ} = \begin{bmatrix}
+1 & 0 & 1/2 & 1/2 \\
+0 & 1 & 1/2 & 1/2 \\
+1/2 & 1/2 & 1 & 1\\
+1/2 & 1/2 & 1 & 1
+\end{bmatrix},
+\bfPhi_{DZ} = \begin{bmatrix}
+1 & 0 & 1/2 & 1/2 \\
+0 & 1 & 1/2 & 1/2 \\
+1/2 & 1/2 & 1 & 1/2\\
+1/2 & 1/2 & 1/2 & 1
+\end{bmatrix},
+\bfPhi_{Adopted} = \bfI_4
+\end{align*}
+%
+for families with parents (indices 1 and 2) and MZ twins, DZ twins, or two adopted children (indices 3 and 4), respectively.

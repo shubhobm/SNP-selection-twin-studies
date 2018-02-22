@@ -1,0 +1,120 @@
+\documentclass[aoas,preprint]{imsart}
+
+\usepackage{amssymb,amsmath,amsthm,color,pagesize,outlines,cite,subfigure}
+\usepackage[small]{caption}
+\usepackage[pdftex]{epsfig}
+\usepackage{hyperref} % for linking references 
+\usepackage{stackrel}
+\usepackage{rotating} % sideways table
+
+\usepackage[numbers]{natbib}
+
+% for algorithm
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+
+%\addtolength{\evensidemargin}{-.5in}
+%\addtolength{\oddsidemargin}{-.5in}
+%\addtolength{\textwidth}{0.9in}
+%\addtolength{\textheight}{0.9in}
+%\addtolength{\topmargin}{-.4in}
+
+%% measurements for 1 inch margin
+%\addtolength{\oddsidemargin}{-.875in}
+%\addtolength{\evensidemargin}{-.875in}
+%\addtolength{\textwidth}{1.75in}
+%\addtolength{\topmargin}{-.875in}
+%\addtolength{\textheight}{1.75in}
+
+%\usepackage{setspace}
+%\doublespacing
+
+%\pagestyle{myheadings}
+%\markboth{}{\underline{{\bf Notes: (do not circulate)} \hspace{4.5cm} {\sc  Ansu Chatterjee} \hspace{0.25cm}}}
+
+%% Appendix theorem counter
+\usepackage{chngcntr}
+\usepackage{apptools}
+\AtAppendix{\counterwithin{Theorem}{section}}
+\numberwithin{equation}{section}
+
+\makeatletter
+\@addtoreset{equation}{section}   % Makes \section reset 'equation' counter.
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\makeatother
+
+\makeatletter
+\@addtoreset{figure}{section}
+\renewcommand{\thefigure}{\thesection.\@arabic\c@figure}
+\makeatother
+
+\makeatletter
+\@addtoreset{table}{section}
+\renewcommand\thetable{\thesection.\@arabic\c@table}
+\makeatother
+
+%
+%\theoremstyle{definition}
+%\newtheorem{Remark}{Remark}[section]
+
+\makeatletter
+\newenvironment{Proof}[1][\proofname]{\par
+  \normalfont
+  \topsep6\p@\@plus6\p@ \trivlist
+  \item[\hskip\labelsep\bfseries
+    #1:]\ignorespaces
+}{%
+  \qed\endtrivlist
+}
+\makeatother
+
+\usepackage{mycommands2}
+
+\theoremstyle{definition}
+\newtheorem{Algorithm}{Algorithm}
+\newtheorem{Example}{Example}[section]
+%\renewcommand{\baselinestretch}{1.25}
+%\endlocaldefs
+%\pdfminorversion=4
+
+\begin{document}
+
+%\newtheorem{Theorem}{Theorem}[section]
+%\newtheorem{Lemma}[Theorem]{Lemma}
+%\newtheorem{Corollary}[Theorem]{Corollary}
+%\newtheorem{Proposition}[Theorem]{Proposition}
+%\newtheorem{Conjecture}[Theorem]{Conjecture}
+%\theoremstyle{definition} \newtheorem{Definition}[Theorem]{Definition}
+
+\begin{frontmatter}
+\title{Simultaneous Selection of Multiple Important Single Nucleotide Polymorphisms in Familial Genome Wide Association Studies data}
+\date{}
+\author{Subhabrata Majumdar, Saonli Basu and Snigdhansu Chatterjee}
+\maketitle
+
+\begin{abstract}
+We propose a resampling-based fast variable selection technique for selecting important Single Nucleotide Polymorphisms (SNP) in multi-marker mixed effect models used in twin studies. Due to computational complexity, current practice includes testing the effect of one SNP at a time, commonly termed as `single SNP association analysis'.  Joint modeling of genetic variants within a gene or pathway may have better power to detect the relevant genetic variants, hence we adapt our recently proposed framework of $e$-values to address this. In this paper, we propose a computationally efficient approach for single SNP detection in families while utilizing information on multiple SNPs simultaneously. We achieve this through improvements in two aspects. First, unlike other model selection techniques, our method only requires training a model with all possible predictors. Second, we utilize a fast and scalable bootstrap procedure that only requires Monte-Carlo sampling to obtain bootstrapped copies of the estimated vector of coefficients. Using this bootstrap sample, we obtain the $e$-value for each SNP, and select SNPs having $e$-values below a threshold. We illustrate through numerical studies that our method is more effective in detecting SNPs associated with a trait than either single-marker analysis using family data or model selection methods that ignore the familial dependency structure. We also use the $e$-values to perform gene-level analysis in nuclear families and detect several SNPs that have been implicated to be associated with alcohol consumption.
+\end{abstract}
+
+\begin{keyword}
+\kwd{Family data}
+\kwd{Twin studies}
+\kwd{ACE model}
+\kwd{Model selection}
+\kwd{Resampling}
+\kwd{Generalized bootstrap}
+\end{keyword}
+
+\end{frontmatter}
+
+\input{Introduction}
+\input{model}
+\input{methods}
+\input{simulation}
+\input{realdata}
+\input{conclusion}
+
+%\bibliographystyle{apalike}
+\bibliographystyle{imsart-number}
+\bibliography{snpbib}
+\end{document}

@@ -1,0 +1,181 @@
+\documentclass[aoas,preprint]{imsart}
+\setattribute{journal}{name}{}
+
+\usepackage{amssymb,amsmath,amsthm,color,pagesize,outlines,cite,subfigure}
+\usepackage[small]{caption}
+\usepackage[pdftex]{epsfig}
+\usepackage{hyperref} % for linking references 
+\usepackage{stackrel}
+\usepackage{rotating} % sideways table
+
+\usepackage[numbers]{natbib}
+
+% for algorithm
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+
+%\addtolength{\evensidemargin}{-.5in}
+%\addtolength{\oddsidemargin}{-.5in}
+%\addtolength{\textwidth}{0.9in}
+%\addtolength{\textheight}{0.9in}
+%\addtolength{\topmargin}{-.4in}
+
+%% measurements for 1 inch margin
+%\addtolength{\oddsidemargin}{-.875in}
+%\addtolength{\evensidemargin}{-.875in}
+%\addtolength{\textwidth}{1.75in}
+%\addtolength{\topmargin}{-.875in}
+%\addtolength{\textheight}{1.75in}
+
+%\usepackage{setspace}
+%\doublespacing
+
+%\pagestyle{myheadings}
+%\markboth{}{\underline{{\bf Notes: (do not circulate)} \hspace{4.5cm} {\sc  Ansu Chatterjee} \hspace{0.25cm}}}
+
+%% Appendix theorem counter
+\usepackage{chngcntr}
+\usepackage{apptools}
+\AtAppendix{\counterwithin{Theorem}{section}}
+\numberwithin{equation}{section}
+
+\makeatletter
+\@addtoreset{equation}{section}   % Makes \section reset 'equation' counter.
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\makeatother
+
+\makeatletter
+\@addtoreset{figure}{section}
+\renewcommand{\thefigure}{\thesection.\@arabic\c@figure}
+\makeatother
+
+\makeatletter
+\@addtoreset{table}{section}
+\renewcommand\thetable{\thesection.\@arabic\c@table}
+\makeatother
+
+%
+%\theoremstyle{definition}
+%\newtheorem{Remark}{Remark}[section]
+
+\makeatletter
+\newenvironment{Proof}[1][\proofname]{\par
+  \normalfont
+  \topsep6\p@\@plus6\p@ \trivlist
+  \item[\hskip\labelsep\bfseries
+    #1:]\ignorespaces
+}{%
+  \qed\endtrivlist
+}
+\makeatother
+
+\usepackage{mycommands2}
+
+\theoremstyle{definition}
+\newtheorem{Algorithm}{Algorithm}
+\newtheorem{Example}{Example}[section]
+%\renewcommand{\baselinestretch}{1.25}
+%\endlocaldefs
+%\pdfminorversion=4
+
+\begin{document}
+
+%\newtheorem{Theorem}{Theorem}[section]
+%\newtheorem{Lemma}[Theorem]{Lemma}
+%\newtheorem{Corollary}[Theorem]{Corollary}
+%\newtheorem{Proposition}[Theorem]{Proposition}
+%\newtheorem{Conjecture}[Theorem]{Conjecture}
+%\theoremstyle{definition} \newtheorem{Definition}[Theorem]{Definition}
+
+\begin{frontmatter}
+\title{Simultaneous Selection of Multiple Important Single Nucleotide Polymorphisms in Familial Genome Wide Association Studies Data}
+\runtitle{Simultaneous Selection of Multiple SNPs}
+\date{}
+\begin{aug}
+\author{\fnms{Subhabrata} \snm{Majumdar}\corref{}\thanksref{m1}\ead[label=e1]{smajumdar@ufl.edu}}
+\and
+\author{\fnms{Saonli} \snm{Basu}\thanksref{m2}\ead[label=e2]{saonli@umn.edu}}
+\and
+\author{\fnms{Matt} \snm{McGue}\thanksref{m2}\ead[label=e3]{mcgue001@umn.edu}}
+\and
+\author{\fnms{Snigdhansu} \snm{Chatterjee}\thanksref{m2}\ead[label=e4]{chatt019@umn.edu}}
+\affiliation{University of Florida\thanksmark{m1} and University of Minnesota Twin Cities\thanksmark{m2}}
+
+%\thankstext{m1}{Footnote to the first author with the `thankstext' command.}
+%\thankstext{m2}{Footnote to the first author with the `thankstext' command.}
+%\thankstext{m3}{Footnote to the first author with the `thankstext' command.}
+
+\address{
+University of Florida Informatics Institute,\\
+432 Newell Drive,\\
+CISE Bldg E251\\
+Gainesville, FL 32611, USA\\
+\printead{e1}\\
+%\phantom{E-mail:\ }\printead*{e1}
+}
+
+\address{
+Division of Biostatistics,\\
+University of Minnesota,\\
+420 Delaware St SE\\
+Minneapolis, MN 55455, USA\\
+\printead{e2}\\
+%\phantom{E-mail:\ }\printead*{e2}
+}
+
+\address{
+Department of Psychology,\\
+University of Minnesota, \\
+75 E River Road\\
+Minneapolis, MN 55455\\
+\printead{e3}\\
+}
+
+\address{
+School of Statistics, \\
+University of Minnesota, \\
+224 Church Street SE\\
+Minneapolis, MN 55455, USA\\
+\printead{e4}\\
+%\phantom{E-mail:\ }\printead*{e2}
+}
+
+\runauthor{Majumdar, Basu, McGue and Chatterjee}
+
+\end{aug}\maketitle
+
+\begin{abstract}
+We propose a resampling-based fast variable selection technique for selecting important Single Nucleotide Polymorphisms (SNP) in multi-marker mixed effect models used in twin studies. Due to computational complexity, current practice includes testing the effect of one SNP at a time, commonly termed as `single SNP association analysis'.  Joint modeling of genetic variants within a gene or pathway may have better power to detect the relevant genetic variants, hence we adapt our recently proposed framework of $e$-values to address this. In this paper, we propose a computationally efficient approach for single SNP detection in families while utilizing information on multiple SNPs simultaneously. We achieve this through improvements in two aspects. First, unlike other model selection techniques, our method only requires training a model with all possible predictors. Second, we utilize a fast and scalable bootstrap procedure that only requires Monte-Carlo sampling to obtain bootstrapped copies of the estimated vector of coefficients. Using this bootstrap sample, we obtain the $e$-value for each SNP, and select SNPs having $e$-values below a threshold. We illustrate through numerical studies that our method is more effective in detecting SNPs associated with a trait than either single-marker analysis using family data or model selection methods that ignore the familial dependency structure. We also use the $e$-values to perform gene-level analysis in nuclear families and detect several SNPs that have been implicated to be associated with alcohol consumption.
+\end{abstract}
+
+%\begin{keyword}[class=MSC]
+%\kwd[Primary ]{62F07}
+%\kwd{62F40}
+%\kwd[; secondary ]{62F12}
+%\end{keyword}
+
+\begin{keyword}
+\kwd{Family data}
+\kwd{Twin studies}
+\kwd{ACE model}
+\kwd{Model selection}
+\kwd{Resampling}
+\kwd{Generalized bootstrap}
+\end{keyword}
+
+\end{frontmatter}
+
+\input{Introduction}
+\input{model}
+\input{methods}
+\input{simulation}
+\input{realdata}
+\input{conclusion}
+
+\section*{Acknowledgements}
+SM acknowledges the University of Minnesota Interdisciplinary Doctoral Fellowship program. SB is supported by the National Institute of Health (NIH) under grant R01-DA033958. SC is partially supported by the National Science Foundation (NSF) under grants \# DMS-1622483, \# DMS-1737918.
+
+%\bibliographystyle{apalike}
+\bibliographystyle{imsart-number}
+\bibliography{snpbib}
+\end{document}

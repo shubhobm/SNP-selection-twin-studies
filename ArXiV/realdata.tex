@@ -1,0 +1,102 @@
+\section{Analysis of the MCTFR data}
+\label{sec:DataSection}
+
+We now apply the above methods on SNPs from the MCTFR dataset. We assume a nuclear pedigree structure, and for simplicity only analyze pedigrees with MZ and DZ twins. After setting aside samples with missing response variables, we end up with 1019 such 4-member families. We look at the effect of genetic factors behind the response variable pertaining to the amount of alcohol consumption, which is highly heritable in this dataset according to previous studies \citep{McGueEtal13}. We analyze SNPs inside some of the most-studied genes with respect to alcohol abuse: GABRA2, ADH1A, ADH1B, ADH1C, ADH4-ADH7, SLC6A3, SLC6A4, OPRM1, CYP2E1, DRD2, ALDH2, and COMT \citep{CoombesThesis16} through separate gene-level models. Any of the ADH genes did not contain many SNPs individually, so we consider the SNPs in all seven of them together. We include sex, birth year, age and generation (parent or offspring) of individuals as covariates to control for their potential effect.
+
+For model selection we use $E_2$ as the evaluation function because of its slighty better performance in the simulations. For each gene-level model, We train the LMM in (\ref{eqn:LMMeqn}) on 75\% of randomly selected families, perform our $e$-values procedure for $s = 0.2, 0.4, \ldots, 2.8, 3, t = 0.1, 0.15, \ldots, 0.75, 0.8$; and select the set of SNPs that minimizes fixed effect prediction error on the data from the other 25\% of families over this grid of $(s,t)$.  
+
+\begin{table}
+    \begin{tabular}{l|l|lll}
+    \hline
+    Gene   & Total no. & \multicolumn{3}{l}{No. of SNPs detected by }\\\cline{3-5}
+    & of SNPs & $e$-value & RFGLS+BH & mBIC2 \\\hline
+    GABRA2 & 11        & 5       & 0     & 0     \\
+    ADH    & 44        & 3       & 1     & 0     \\
+    OPRM1  & 47        & 25      & 1     & 0     \\
+    CYP2E1 & 9         & 5       & 0     & 0     \\
+    ALDH2  & 6         & 5       & 0     & 1     \\
+    COMT   & 15        & 14      & 0     & 0     \\
+    SLC6A3 & 18        & 4       & 0     & 0     \\
+    SLC6A4 & 5         & 0       & 0     & 0     \\
+    DRD2   & 17        & 0       & 0     & 1     \\\hline
+    \end{tabular}
+    \caption{Table of analyzed genes and number of detected SNPs in them by the three methods}
+    \label{table:genetable}
+\end{table}
+
+As seen in Table~\ref{table:genetable}, our $e$-value based technique detects a much higher number of SNPs than the two competing methods. Our method selects all but one SNP in the genes ALDH2 and COMT. These are small genes of size 50kb and 30kb, respectively, thus SNPs within them have more chance of being in high Linkage Disequilibrium (LD). On the other hand, it does not select any SNPs in SLC6A4 and DRD2. Variants of these genes are known to interact with each other and are jointly associated with multiple behavioral disorders \citep{KarpyakEtal10, WangEtal14}.
+
+\begin{table}
+    \begin{tabular}{l|p{2in}|p{1.5in}}
+    \hline
+    Gene      & Detected SNPs with                              & Reference for \\
+    & known associations & associated SNP                              \\\hline
+    GABRA2    & rs1808851, rs279856: close to rs279858                         & \cite{CuiEtal12}                                                    \\\hline
+    ADH genes & rs17027523: 20kb upstream of rs1229984 & Multiple studies (\url{https://www.snpedia.com/index.php/Rs1229984}) \\\hline
+    OPRM1     & rs12662873: 1 kb upstream of rs1799971                            & Multiple studies (\url{https://www.snpedia.com/index.php/Rs1799971}) \\\hline
+    CYP2E1    & rs9419624: 600b downstream of rs4646976; rs9419702: 10kb upstream of rs4838767 & \cite{LindEtal12}\\\hline
+    ALDH2     & rs16941437: 10kb upstream of rs671                               & Multiple studies (\url{https://www.snpedia.com/index.php/Rs671}) \\\hline
+    COMT      & rs4680, rs165774                                               & \cite{VoiseyEtal11}                                                                               \\\hline
+    SLC6A3    & rs464049                                                       & \cite{HuangEtal17}\\\hline
+    \end{tabular}
+    \caption{Table of detected SNPs with known references}
+    \label{table:genetable2}
+\end{table}
+
+A number of SNPs we detect (or SNPs situated close to them) have known associations with alcohol-related behavioral disorders. We summarize this in Table~\ref{table:genetable2}. Prominent among them are rs1808851 and rs279856 in the GABRA2 gene, which are at perfect LD with rs279858 in the larger, 7188-individual version of our twin studies dataset \citep{IronsThesis12}. This SNP is the marker in GABRA2 that is most frequently associated in the literature with alcohol abuse \citep{CuiEtal12}, but was not genotyped in our sample. A single SNP RFGLS analysis of the same twin studies data that used Bonferroni correction on marginal $p$-values missed the SNPs we detect \citep{IronsThesis12}: highlighting the advantage of our approach. We give a gene-wise discussion of associated SNPs, as well as information on all SNPs, in the supplementary material.
+
+\begin{figure}
+\begin{center}
+
+\begin{tabular}{c}
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_GABRA2"}.png}\\
+		(a)\\
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_ADH"}.png} \\
+		(b)\\	
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_OPRM1"}.png}\\
+		(c)\\	
+\end{tabular}
+
+\caption{Plot of $e$-values for genes analyzed: (a) GABRA2, (b) ADH1 to ADH7, (c) OPRM1. For ease of visualization, $1 - e$-values are plotted in the y-axis.}
+\label{fig:geneplot1}
+
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+
+\begin{tabular}{c}
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_CYP2E1"}.png}\\
+		(d)\\
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_ALDH2"}.png} \\
+		(e)\\	
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_COMT"}.png}\\
+		(f)\\	
+\end{tabular}
+
+\caption{Plot of $e$-values for genes analyzed: (d) CYP2E1, (e) ALDH2, (f) COMT}
+\label{fig:geneplot2}
+
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+
+\begin{tabular}{c}
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_SLC6A3"}.png}\\
+		(g)\\
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_SLC6A4"}.png} \\
+		(h)\\	
+		\includegraphics[height=.4\textwidth]{{"plotMZDZ_DRD2"}.png}\\
+		(i)\\	
+\end{tabular}
+
+\caption{Plot of $e$-values for genes analyzed: (g) SLC6A3, (h) SLC6A4, (i) DRD2}
+\label{fig:geneplot3}
+
+\end{center}
+\end{figure}
+
+We plot the $90^{\Th}$ quantile $e$-value estimates in Figures~\ref{fig:geneplot1}, \ref{fig:geneplot2} and \ref{fig:geneplot3}. We obtained gene locations, as well as the locations of coding regions of genes, i.e. exons, inside 6 of these 9 genes from annotation data extracted from the UCSC Genome Browser database \citep{UCSCdata}. Exon locations were not available for OPRM1, CYP2E1 and DRD2. In general, SNPs tend to get selected in groups with neighboring SNPs, which suggests high LD. Also most of the selected SNPs either overlap or in close proximity to the exons, which underline their functional relevance.

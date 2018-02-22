@@ -1,0 +1,241 @@
+\section{Simulation}
+\label{sec:SimSection}
+
+We now evaluate the performance of the above formulation of quantile $e$-values in a simulation setup. For this, consider the model in (\ref{eqn:LMMeqn}) with no environmental covariates. We consider familes with MZ twins and first generate the SNP matrices $\bfG_i$. We take a total of $p_g = 50$ SNPs, and generate them in correlated blocks of 6, 4 ,6, 4 and 30 to simulate correlation among SNPs in the genome. We set the correlation between two SNPs inside a block at 0.7, and consider the blocks to be uncorrelated. For each parent we generate two independent vectors of length 50 with the above correlation structure, and entries within each block being 0 or 1 following Bernoulli distributions with probabilities 0.2, 0.4, 0.4, 0.25 and 0.25 (Minor Allele Frequency or MAF) for SNPs in the 5 blocks, respectively. The genotype of a person is then determined by taking the sum of these two vectors: thus entries in $\bfG_i$ can take the values 0, 1 or 2. Finally we set the common genotype of the twins by randomly choosing one allele vector from each of the parents and taking their sum.
+
+%We use the R package \texttt{regress} to fit the above model with additive error structure. The package requires specifying the dependency structure of all samples in the data. For ease of representation, we only consider nuclear pedigrees with MZ twins in our simulation study and data analysis, which simplifies the overall relationship matrix $\bfPhi = \text{diag} ( \bfPhi_1, \ldots, \bfPhi_m)$ as $\bfI_m \otimes \bfPhi_{MZ}$. Note that, situations in which the pedigree structure is not nuclear can be readily handled in this situation by supplying the overall $\bfPhi$ matrix. The second overall structural component will be  $\bfI_m \otimes {\bf 1} {\bf 1}^T$.
+
+We repeat the above process for $m=250$ families. In GWAS generally each associated SNP explains only a small proportion of the overall variability of the trait. To reflect this in our simulation setup, we assume that the first entries in each of the first four blocks above are causal, and each of them explains $h/(\sigma_a^2+\sigma_c^2+\sigma_e^2) \%$ of the overall variability. The term $h$ is known as the \textit{heritability} of the corresponding SNP. The value of the non-zero coefficient in $k$-th block: $k = 1, ..., 4$, say $\beta_k$ is calculated using the formula:
+%
+\begin{align}
+\beta_k = \sqrt{ \frac{h}{100 (\sigma_a^2+\sigma_c^2+\sigma_e^2). 2 \text{MAF}_k (1 - \text{MAF}_k) }}
+\end{align}
+%
+We fix the following values for the error variance components: $\sigma_a^2 = 4, \sigma_c^2 = 1, \sigma_e^2 = 1$, and generate pedigree-wise response vectors $\bfy_1, \ldots, \bfy_{250}$ using the above setup. To consider different SNP effect sizes, we repeat the above setup for $h \in \{10, 7, 5, 3, 2, 1, 0 \}$, generating 1000 datasets for each value of $h$.
+
+\subsection{Methods and metrics}
+For this simulated data, we compare our $e$-value based approach using the evaluation maps $E_1$ and $E_2$ in (\ref{eqn:EvaluationExamples}) with two other methods:
+
+{\it (1) Model selection on linear model:} Here we ignore the dependency structure within families by training linear models on the simulated data and selecting SNPs with non-zero effects by backward deletion using a modification of the BIC called mBIC2. This has been showed to give better results than single-SNP analysis in a GWAS with unrelated individuals \citep{FrommeletEtal12} and provides approximate False Discovery Rate (FDR) control at level 0.05 \citep{BogdanEtal11}.
+
+{\it (2) Single-marker mixed model:} We train single-SNP versions of (\ref{eqn:LMMeqn}) using a fast approximation of the Generalized Least Squares procedure (named Rapid Feasible Generalized Least Squares or RFGLS: \cite{LiEtal11}), obtain marginal $p$-values from corresponding $t$-tests and use the Benjamini-Hochberg (BH) procedure to select significant SNPs at FDR = $0.05$.
+
+With the $e$-value being the $q^\text{th}$ quantile of the evaluation map distribution, we set the detection threshold value at the $t^\text{th}$ multiple of $q$ for some $0 < t < 1$. This means all indices $j$ such that the $q^\text{th}$ quantile of the bootstrap approximation of $\BE_{-j} $ is less than the $tq^\text{th}$ quantile of the bootstrap approximation of $\BE_{*}$ get selected as the set of active predictors. To enforce stricter control on the selected set of SNPs we repeat this for $q \in \{ 0.5, 0.6, 0.7, 0.8, 0.9 \}$, and take the SNPs that get selected for \textit{all} values of $q$ as the final set of selected SNPs.
+
+Since the above procedure depends on the bootstrap standard deviation parameter $s$, we repeat the process for $s  \in \{ 0.3, 0.15, \ldots, 0.95, 2 \}$, and take as the final estimated set of SNPs the SNP set $\hat \cS_t (s)$ that minimizes fixed effect prediction error (PE) on an independently generated test dataset $\{ (\bfy_{test,i}, \bfG_{test,i}), i = 1, \ldots, 250 \}$ from the same setup above:
+%
+\begin{align*}
+& \text{PE}_t (s)  = \sum_{i=1}^{250} \sum_{j=1}^4 \left( y_{test,ij} - \bfg_{test,ij}^T \hat \bfbeta_{\hat \cS_t (s)} \right)^2; \\
+& \hat \cS_t = \argmin_s \text{PE}_t (s)
+\end{align*}
+
+We use the following metrics to evaluate each method we implement: (1) True Positive (TP), which is the proportion of causal SNPs detected;  (2) True Negative (TN), which is the proportion of non-causal SNPs undetected;  (3) Relaxed True Positive (RTP), which is the: proportion of detecting any SNP in each of the 4 blocks with causal SNPs, i.e. for the selected index set by some method $m$, say $\hat \cS_m$,
+%
+$$
+\text{RTP} ( \hat \cS_m ) = \frac{1}{4} \sum_{i=1}^4 \BI ( \text{Block } i \cap \hat \cS_m \neq \emptyset )
+$$
+%
+and finally (4) Relaxed True Negative (RTN), which is the proportion of SNPs in block 5 undetected. We consider the third and fourth metrics to cover situations in which the causal SNP is not detected itself, but highly correlated SNPs with the causal SNP are. This is common in GWAS \citep{FrommeletEtal12}. Finally, we average all the above proportions over 1000 replications, and repeat the process for two different ranges of $t$ for $E_1$ and $E_2$.
+
+%Although the first two heritability values are larger compared to a typical GWAS setup, we use this setup to demonstrate limitations of the existing methodology even in a vastly simplified setting.
+
+\subsection{Results}
+% latex table generated in R 3.3.2 by xtable 1.8-2 package
+% Sun Apr 16 18:24:09 2017
+% latex table generated in R 3.3.2 by xtable 1.8-2 package
+% Sun Apr 16 18:24:48 2017
+%\begin{table}
+%\begin{footnotesize}
+%\centering
+%    \begin{tabular}{c|c|c|c|cccc}
+%    \hline
+%     6x   & mBIC2       & RFGLS  & \multicolumn{5}{|c}{quantile $e$-values}    \\\cline{4-8}
+%    Heritability    &           & +BH		 & $q$    & $t=0.8$     & $t=0.7$     & $t=0.6$     & $t=0.5$     \\ \hline
+%    ~    & ~         & ~         & 0.9      & 0.95/0.97 & 0.95/0.97 & 0.95/0.98 & 0.94/0.98 \\
+%    $h=10$ & 0.79/0.99 & 0.95/0.92 & 0.5      & 0.96/0.97 & 0.96/0.98 & 0.95/0.98 & 0.94/0.98 \\
+%    ~    & ~         & ~         & 0.2      & 0.96/0.94 & 0.96/0.97 & 0.95/0.97 & 0.95/0.98 \\\hline
+%    ~    & ~         & ~         & 0.9      & 0.72/0.95 & 0.7/0.96  & 0.69/0.96 & 0.66/0.97 \\
+%    $h=5$  & 0.41/0.99 & 0.62/0.97 & 0.5      & 0.78/0.94 & 0.75/0.94 & 0.72/0.95 & 0.71/0.96 \\
+%    ~    & ~         & ~         & 0.2      & 0.83/0.91 & 0.78/0.94 & 0.75/0.95 & 0.73/0.95 \\\hline
+%    ~    & ~         & ~         & 0.9      & 0.26/0.97 & 0.24/0.97 & 0.23/0.98 & 0.21/0.98 \\
+%    $h=2$  & 0.11/0.99 & 0.14/0.99 & 0.5      & 0.34/0.95 & 0.28/0.96 & 0.27/0.97 & 0.26/0.97 \\
+%    ~    & ~         & ~         & 0.2      & 0.46/0.91 & 0.34/0.95 & 0.3/0.96  & 0.27/0.96 \\\hline
+%    ~    & ~         & ~         & 0.9      & 0.12/0.98 & 0.1/0.98  & 0.09/0.99 & 0.08/0.99 \\
+%    $h=1$  & 0.05/0.99 & 0.04/0.99    & 0.5      & 0.16/0.96 & 0.13/0.97 & 0.12/0.97 & 0.11/0.98 \\
+%    ~    & ~         & ~         & 0.2      & 0.25/0.93 & 0.16/0.96 & 0.13/0.97 & 0.13/0.97 \\\hline
+%    ~    & ~         & ~         & 0.9      & --/0.99 & --/0.99 & --/0.99 & --/0.99    \\
+%    $h=0$  & --/0.99 & --/0.99       & 0.5      & --/0.98 & --/0.98 & --/0.99 & --/0.99 \\
+%    ~    & ~         & ~         & 0.2      & --/0.94 & --/0.98 & --/0.98 & --/0.99 \\\hline
+%    \end{tabular}
+%    \caption{Average True Positive (TP) and True Negative (TN) proportions over 1000 replications for all three methods}
+%    \label{table:SNPSimTable0}
+%\end{footnotesize}
+%\end{table}
+
+%% latex table generated in R 3.3.2 by xtable 1.8-2 package
+%% Sun Apr 16 18:24:09 2017
+%% latex table generated in R 3.3.2 by xtable 1.8-2 package
+%% Sun Apr 16 18:24:48 2017
+%\begin{table}
+%\begin{footnotesize}
+%\centering
+%    \begin{tabular}{c|c|c|c|cccc}
+%    \hline
+%    6x    & mBIC2       & RFGLS  & \multicolumn{5}{|c}{quantile $e$-values}    \\\cline{4-8}
+%    Heritability    &           & +BH		 & $q$    & $t=0.8$     & $t=0.7$     & $t=0.6$     & $t=0.5$     \\ \hline
+%     ~    & 0.27/0.98 & 0.96/0.99 & 0.9      & 0.95/0.97 & 0.95/0.97 & 0.94/0.97 & 0.94/0.98 \\
+%    ~    & ~         & ~         & 0.5      & 0.98/0.96 & 0.97/0.97 & 0.96/0.97 & 0.96/0.97 \\
+%    h=10 & ~         & ~         & 0.2      & 0.99/0.9  & 0.97/0.96 & 0.97/0.97 & 0.96/0.97 \\
+%    ~    & ~         & ~         & 0.1      & 0.99/0.83 & 0.98/0.93 & 0.97/0.96 & 0.96/0.97 \\
+%    ~    & ~         & ~         & 0.05     & 0.99/0.74 & 0.98/0.88 & 0.97/0.94 & 0.97/0.96 \\ \hline
+%    ~    & 0.16/0.98 & 0.63/0.99 & 0.9      & 0.74/0.95 & 0.73/0.95 & 0.71/0.96 & 0.69/0.97 \\
+%    ~    & ~         & ~         & 0.5      & 0.83/0.93 & 0.78/0.94 & 0.76/0.95 & 0.75/0.95 \\
+%    h=5  & ~         & ~         & 0.2      & 0.9/0.87  & 0.83/0.93 & 0.79/0.94 & 0.76/0.95 \\
+%    ~    & ~         & ~         & 0.1      & 0.93/0.79 & 0.86/0.9  & 0.81/0.93 & 0.78/0.94 \\
+%    ~    & ~         & ~         & 0.05     & 0.95/0.72 & 0.88/0.86 & 0.83/0.91 & 0.79/0.93 \\ \hline
+%    ~    & 0.09/0.98 & 0.16/1    & 0.9      & 0.32/0.96 & 0.29/0.97 & 0.27/0.97 & 0.24/0.98 \\
+%    ~    & ~         & ~         & 0.5      & 0.45/0.94 & 0.34/0.96 & 0.32/0.96 & 0.3/0.97  \\
+%    h=2  & ~         & ~         & 0.2      & 0.66/0.86 & 0.47/0.93 & 0.38/0.95 & 0.33/0.96 \\
+%    ~    & ~         & ~         & 0.1      & 0.77/0.79 & 0.57/0.9  & 0.43/0.94 & 0.37/0.95 \\
+%    ~    & ~         & ~         & 0.05     & 0.82/0.71 & 0.64/0.85 & 0.5/0.92  & 0.41/0.94 \\ \hline
+%    ~    & 0.07/0.98 & 0.05/1    & 0.9      & 0.16/0.97 & 0.14/0.98 & 0.13/0.98 & 0.11/0.99 \\
+%    ~    & ~         & ~         & 0.5      & 0.26/0.95 & 0.18/0.97 & 0.17/0.97 & 0.15/0.98 \\
+%    h=1  & ~         & ~         & 0.2      & 0.5/0.88  & 0.28/0.94 & 0.2/0.96  & 0.17/0.97 \\
+%    ~    & ~         & ~         & 0.1      & 0.65/0.79 & 0.4/0.91  & 0.26/0.95 & 0.2/0.97  \\
+%    ~    & ~         & ~         & 0.05     & 0.73/0.71 & 0.51/0.86 & 0.35/0.92 & 0.24/0.95 \\ \hline
+%    ~    & 0.05/0.98 & 0.01/1    & 0.9      & 0.04/0.98 & 0.04/0.99 & 0.03/0.99 & 0.03/0.99 \\
+%    ~    & ~         & ~         & 0.5      & 0.1/0.97  & 0.05/0.98 & 0.04/0.98 & 0.04/0.98 \\
+%    h=0  & ~         & ~         & 0.2      & 0.32/0.89 & 0.1/0.96  & 0.06/0.98 & 0.05/0.98 \\
+%    ~    & ~         & ~         & 0.1      & 0.5/0.82  & 0.22/0.93 & 0.1/0.97  & 0.06/0.98 \\
+%    ~    & ~         & ~         & 0.05     & 0.64/0.73 & 0.37/0.87 & 0.2/0.94  & 0.09/0.97 \\ \hline
+%    \end{tabular}
+%    \caption{Average Relaxed True Positive (RTP) and Relaxed True Negative (RTN) proportions over 1000 replications for all three methods}
+%    \label{table:SNPSimTable1}
+%\end{footnotesize}
+%\end{table}
+%\begin{table}
+%\begin{footnotesize}
+%\centering
+%    \begin{tabular}{c|c|c|c|cccc}
+%    \hline
+%    6x    & mBIC2       & RFGLS  & \multicolumn{5}{|c}{quantile $e$-values}    \\\cline{4-8}
+%    Heritability    &           & +BH		 & $q$    & $t=0.8$     & $t=0.7$     & $t=0.6$     & $t=0.5$     \\ \hline
+%    ~    & ~         & ~         & 0.9      & 0.96/0.97 & 0.96/0.97 & 0.95/0.98 & 0.94/0.98 \\
+%    $h=10$ & 0.84/0.99 & 0.96/0.99 & 0.5      & 0.96/0.97 & 0.96/0.97 & 0.95/0.98 & 0.95/0.98 \\
+%    ~    & ~         & ~         & 0.2      & 0.97/0.95 & 0.96/0.97 & 0.96/0.97 & 0.95/0.98 \\\hline
+%    ~    & ~         & ~         & 0.9      & 0.73/0.95 & 0.71/0.95 & 0.7/0.96  & 0.67/0.97 \\
+%    $h=5$  & 0.48/0.99 & 0.64/0.99 & 0.5      & 0.79/0.93 & 0.76/0.94 & 0.73/0.95 & 0.72/0.95 \\
+%    ~    & ~         & ~         & 0.2      & 0.85/0.91 & 0.79/0.93 & 0.76/0.94 & 0.74/0.95 \\\hline
+%    ~    & ~         & ~         & 0.9      & 0.29/0.96 & 0.27/0.97 & 0.25/0.98 & 0.23/0.98 \\
+%    $h=2$  & 0.16/0.99 & 0.16/0.99    & 0.5      & 0.37/0.95 & 0.31/0.96 & 0.3/0.96  & 0.29/0.97 \\
+%    ~    & ~         & ~         & 0.2      & 0.53/0.91 & 0.38/0.95 & 0.33/0.95 & 0.3/0.96  \\\hline
+%    ~    & ~         & ~         & 0.9      & 0.15/0.97 & 0.13/0.98 & 0.12/0.98 & 0.1/0.99  \\
+%    $h=1$  & 0.08/0.99 & 0.05/0.99    & 0.5      & 0.2/0.96  & 0.17/0.97 & 0.15/0.97 & 0.13/0.98 \\
+%    ~    & ~         & ~         & 0.2      & 0.35/0.93 & 0.21/0.96 & 0.17/0.97 & 0.16/0.97 \\\hline
+%    ~    & ~         & ~         & 0.9      & --/0.97 & --/0.98 & --/0.98 & --/0.99 \\
+%    $h=0$  & --/0.98 & --/0.99    & 0.5      & --/0.95 & --/0.97 & --/0.97 & --/0.98 \\
+%    ~    & ~         & ~         & 0.2      & --/0.90 & --/0.95 & --/0.97 & --/0.97 \\\hline
+%    \end{tabular}
+%    \caption{Average Relaxed True Positive (RTP) and Relaxed True Negative (RTN) proportions over 1000 replications for all three methods}
+%    \label{table:SNPSimTable1}
+%\end{footnotesize}
+%\end{table}
+
+% latex table generated in R 3.3.2 by xtable 1.8-2 package
+% Mon May 29 17:52:12 2017
+%\begin{table}[t]
+%\begin{footnotesize}
+%\centering
+%\begin{tabular}{c|c|c|ccccc}
+%  \hline
+%  & mBIC2 & RFGLS+BH & $t=\exp(-1)$ & $t=\exp(-2)$ & $t=\exp(-3)$ & $t=\exp(-4)$ & $t=\exp(5)$ \\ 
+%  \hline
+%$h=10$ & 0.79/0.99 & 0.95/0.92 & 0.95/0.98 & 0.94/0.98 & 0.94/0.99 & 0.92/0.99 & 0.9/0.99 \\ 
+%  $h=7$ & 0.59/0.99 & 0.82/0.95 & 0.87/0.97 & 0.85/0.98 & 0.82/0.98 & 0.79/0.99 & 0.75/0.99 \\ 
+%  $h=5$ & 0.41/0.99 & 0.62/0.97 & 0.74/0.97 & 0.69/0.98 & 0.65/0.98 & 0.61/0.99 & 0.55/0.99 \\ 
+%  $h=3$ & 0.2/0.99 & 0.29/0.98 & 0.47/0.97 & 0.43/0.98 & 0.37/0.99 & 0.32/0.99 & 0.26/1 \\ 
+%  $h=2$ & 0.11/0.99 & 0.14/0.99 & 0.28/0.97 & 0.25/0.98 & 0.2/0.99 & 0.17/0.99 & 0.13/1 \\ 
+%  $h=1$ & 0.05/0.99 & 0.04/1 & 0.12/0.98 & 0.09/0.99 & 0.07/0.99 & 0.06/1 & 0.04/1 \\ 
+%  $h=0$ & 0.01/0.99 & 0/1 & 0.01/0.99 & 0.01/0.99 & 0/1 & 0/1 & 0/1 \\ 
+%   \hline
+%\end{tabular}
+%\caption{Average True Positive (TP) and True Negative (TN) proportions over 1000 replications for all three methods and $E_1$}
+%\label{table:SNPSimTable0}
+%\end{footnotesize}
+%\end{table}
+%
+%% latex table generated in R 3.3.2 by xtable 1.8-2 package
+%% Mon May 29 17:53:11 2017
+%\begin{table}[t]
+%\begin{footnotesize}
+%\centering
+%\begin{tabular}{c|c|c|ccccc}
+%  \hline
+%  & mBIC2 & RFGLS+BH & $t=\exp(-1)$ & $t=\exp(-2)$ & $t=\exp(-3)$ & $t=\exp(-4)$ & $t=\exp(5)$ \\ 
+%  \hline
+%  $h=10$ & 0.84/0.99 & 0.96/0.99 & 0.95/0.98 & 0.94/0.99 & 0.94/0.99 & 0.92/0.99 & 0.9/0.99 \\ 
+%  $h=7$ & 0.66/0.99 & 0.83/0.99 & 0.87/0.97 & 0.85/0.98 & 0.83/0.99 & 0.8/0.99 & 0.75/0.99 \\ 
+%  $h=5$ & 0.48/0.99 & 0.64/0.99 & 0.75/0.97 & 0.71/0.98 & 0.67/0.99 & 0.62/0.99 & 0.56/0.99 \\ 
+%  $h=3$ & 0.26/0.99 & 0.32/0.99 & 0.5/0.97 & 0.45/0.98 & 0.39/0.99 & 0.33/0.99 & 0.27/1 \\ 
+%  $h=2$ & 0.16/0.99 & 0.16/1 & 0.32/0.98 & 0.28/0.98 & 0.22/0.99 & 0.18/0.99 & 0.14/1 \\ 
+%  $h=1$ & 0.08/0.99 & 0.05/1 & 0.15/0.98 & 0.12/0.99 & 0.09/0.99 & 0.07/1 & 0.05/1 \\ 
+%  $h=0$ & 0.03/0.99 & 0.01/1 & 0.04/0.99 & 0.03/0.99 & 0.02/1 & 0.01/1 & 0.01/1 \\ 
+%   \hline
+%\end{tabular}
+%\caption{Average Relaxed True Positive (RTP) and Relaxed True Negative (RTN) proportions over 1000 replications for all three methods and $E_1$}
+%\label{table:SNPSimTable1}
+%\end{footnotesize}
+%\end{table}
+\begin{sidewaystable}
+\centering
+\begin{scriptsize}
+    \begin{tabular}{c|l|lllllll}
+    \hline
+    \multicolumn{2}{c|}{Method}          & $h = 10$    & $h = 7$     & $h = 5$     & $h = 3$     & $h = 2$     & $h = 1$     & $h = 0$     \\ \hline
+    \multicolumn{2}{c|}{mBIC2}           & 0.79/0.99 & 0.59/0.99 & 0.41/0.99 & 0.2/0.99  & 0.11/0.99 & 0.05/0.99 & -/0.99 \\
+    \multicolumn{2}{c|}{RFGLS+BH}        & 0.95/0.92 & 0.82/0.95 & 0.62/0.97 & 0.29/0.98 & 0.14/0.99 & 0.04/1    & -/1       \\ \hline
+    ~        & $t = \exp(-1)$ & 0.95/0.98 & 0.87/0.97 & 0.74/0.97 & 0.47/0.97 & 0.28/0.97 & 0.12/0.98 & -/0.99 \\
+    ~        & $t = \exp(-2)$ & 0.94/0.98 & 0.85/0.98 & 0.69/0.98 & 0.43/0.98 & 0.25/0.98 & 0.09/0.99 & -/0.99 \\
+    $E_1$    & $t = \exp(-3)$ & 0.94/0.99 & 0.82/0.98 & 0.65/0.98 & 0.37/0.99 & 0.2/0.99  & 0.07/0.99 & -/1       \\
+    ~        & $t = \exp(-4)$ & 0.92/0.99 & 0.79/0.99 & 0.61/0.99 & 0.32/0.99 & 0.17/0.99 & 0.06/1    & -/1       \\
+    ~        & $t = \exp(-5)$ & 0.9/0.99  & 0.75/0.99 & 0.55/0.99 & 0.26/1    & 0.13/1    & 0.04/1    & -/1       \\ \hline
+    ~        & $t = 0.8$    & 0.97/0.98 & 0.9/0.97  & 0.79/0.96 & 0.54/0.96 & 0.34/0.97 & 0.15/0.98 & -/0.99 \\
+    ~        & $t = 0.74$   & 0.96/0.98 & 0.88/0.97 & 0.75/0.97 & 0.48/0.97 & 0.29/0.98 & 0.12/0.98 & -/0.99 \\
+    $E_2$    & $t = 0.68$   & 0.95/0.99 & 0.87/0.98 & 0.72/0.98 & 0.45/0.98 & 0.26/0.98 & 0.1/0.99  & -/0.99 \\
+    ~        & $t = 0.62$   & 0.95/0.99 & 0.84/0.98 & 0.68/0.98 & 0.4/0.99  & 0.22/0.99 & 0.09/0.99 & -/0.99    \\
+    ~        & $t = 0.56$   & 0.94/0.99 & 0.82/0.99 & 0.65/0.99 & 0.36/0.99 & 0.19/0.99 & 0.07/1    & -/1       \\
+    ~        & $t = 0.5$    & 0.92/0.99 & 0.79/0.99 & 0.6/0.99  & 0.31/0.99 & 0.16/1    & 0.05/1    & -/1       \\ \hline
+    \end{tabular}
+    
+\vspace{1em}
+
+        \begin{tabular}{c|l|lllllll}
+    \hline
+    \multicolumn{2}{c|}{Method}          & $h = 10$    & $h = 7$     & $h = 5$     & $h = 3$     & $h = 2$     & $h = 1$     & $h = 0$     \\ \hline
+    \multicolumn{2}{c|}{mBIC2}           & 0.84/0.99 & 0.66/0.99 & 0.48/0.99 & 0.26/0.99 & 0.16/0.99 & 0.08/0.99 & -/0.98 \\
+    \multicolumn{2}{c|}{RFGLS+BH}        & 0.96/0.99 & 0.83/0.99 & 0.64/0.99 & 0.32/0.99 & 0.16/1    & 0.05/1    & -/1    \\ \hline
+    ~        & $t = \exp(-1)$ & 0.95/0.98 & 0.87/0.97 & 0.75/0.97 & 0.5/0.97  & 0.32/0.98 & 0.15/0.98 & -/0.98 \\
+    ~        & $t = \exp(-2)$ & 0.94/0.99 & 0.85/0.98 & 0.71/0.98 & 0.45/0.98 & 0.28/0.98 & 0.12/0.99 & -/0.98 \\
+    $E_1$    & $t = \exp(-3)$ & 0.94/0.99 & 0.83/0.99 & 0.67/0.99 & 0.39/0.99 & 0.22/0.99 & 0.09/0.99 & -/0.99    \\
+    ~        & $t = \exp(-4)$ & 0.92/0.99 & 0.8/0.99  & 0.62/0.99 & 0.33/0.99 & 0.18/0.99 & 0.07/1    & -/1    \\
+    ~        & $t = \exp(-5)$ & 0.9/0.99  & 0.75/0.99 & 0.56/0.99 & 0.27/1    & 0.14/1    & 0.05/1    & -/1    \\ \hline
+    ~        & $t = 0.8$    & 0.97/0.98 & 0.91/0.97 & 0.8/0.96  & 0.57/0.96 & 0.38/0.97 & 0.2/0.98  & -/0.97 \\
+    ~        & $t = 0.74$   & 0.96/0.98 & 0.89/0.98 & 0.76/0.97 & 0.51/0.97 & 0.33/0.98 & 0.15/0.98 & -/0.98 \\
+    $E_2$    & $t = 0.68$   & 0.95/0.99 & 0.87/0.98 & 0.73/0.98 & 0.48/0.98 & 0.29/0.98 & 0.12/0.99 & -/0.98 \\
+    ~        & $t = 0.62$   & 0.95/0.99 & 0.85/0.99 & 0.69/0.98 & 0.42/0.99 & 0.24/0.99 & 0.11/0.99 & -/0.99    \\
+    ~        & $t = 0.56$   & 0.94/0.99 & 0.83/0.99 & 0.66/0.99 & 0.38/0.99 & 0.2/0.99  & 0.08/0.99 & -/0.99    \\
+    ~        & $t = 0.5$    & 0.92/0.99 & 0.79/0.99 & 0.61/0.99 & 0.32/0.99 & 0.17/1    & 0.06/1    & -/1    \\ \hline
+    \end{tabular}
+\end{scriptsize}
+\caption{(Top) Average True Positive (TP)/ True Negative (TN) rates for mBIC2, RFGLS+BH and the $e$-values method with $E_1$ and $E_2$ as evaluation maps and different values of $t$ over 1000 replications, and (Bottom) Average Relaxed True Positive (RTP) and Relaxed True Negative (RTN) rates}
+\label{table:SNPSimTable0}
+\end{sidewaystable}
+%
+
+We present the simulation results in table \ref{table:SNPSimTable0}. For all heritability values, applying mBIC2 on linear models performs poorly compared to applying RFGLS and then correcting for multiple testing. This is expected because the linear model ignores within-family error components.
+
+Our method works better than the two competing methods for detecting true signals across different values of $h$: the average TP rate going down slowly than other methods across the majority of choices for $t$. Both mBIC2 and RFGLS+BH have very high true negative detection rates, which is matched by our method for higher values of $q$. Since all reduced model distributions reside on the left of the full model distribution, we expect the variable selection process to turn more conservative at lower values of $t$.This effect is more noticeable for lower $q$, indicating that the right tails of evaluation map distributions are more useful for this purpose. Finally for $h=0$, we report only TN and RTN values since no signals should ideally be detected: in terms of this a value of $q=0.9$ or $q=0.5$ leads to the same TN and RTN performance as RFGLS+BH for all choices of $t$.
+
+RTP performances for all methods are better than the corresponding TP/TN performances. However, for mBIC2 this seems to be due to detecting SNPs in the first four blocks by chance since for $h=0$ its RTN is less than TN. Also $E_2$ seems to perform slightly better than $E_1$, in the sense that it yields a higher TP (or RTP) while having the same TN (or RTN) rates.
+
+%Considering that when analyzing a large number of SNPs false positives need to be minimized, setting $q=0.9, t=0.5$ is a safe choice choice for $e$-values in this simulation setup. Note here that the previous model selection algorithm using $e$-values depended on comparing the mean of the evaluation map distribution $\BE_{-j,n}$ with that of $\BE_{* n}$. Compared to that here we end up comparing a tail quantile of $\BE_{-j,n}$, and set the detection threshold at a smaller value than the same quantile of $\BE_{* n}$.

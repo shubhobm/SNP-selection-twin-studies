@@ -1,0 +1,172 @@
+%\documentclass[fleqn,11pt]{article}
+\documentclass[aos]{imsart}
+
+\usepackage{mycommands,amssymb,amsmath,mathabx,amsthm,color,pagesize,outlines,cite,subfigure}
+\usepackage[small]{caption}
+%\usepackage{epsfig}
+\usepackage{graphicx}
+
+\usepackage[round]{natbib}
+
+% for algorithm
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+\usepackage{hyperref} % for linking references 
+\usepackage{stackrel}
+
+%\addtolength{\evensidemargin}{-.5in}
+%\addtolength{\oddsidemargin}{-.5in}
+%\addtolength{\textwidth}{0.9in}
+%\addtolength{\textheight}{0.9in}
+%\addtolength{\topmargin}{-.4in}
+
+%% measurements for 1 inch margin
+%\addtolength{\oddsidemargin}{-.875in}
+%\addtolength{\evensidemargin}{-.875in}
+%\addtolength{\textwidth}{1.75in}
+%\addtolength{\topmargin}{-.875in}
+%\addtolength{\textheight}{1.75in}
+%\usepackage{setspace}
+%\doublespacing
+
+%\pagestyle{myheadings}
+%\markboth{}{\underline{{\bf Notes: (do not circulate)} \hspace{4.5cm} {\sc  Ansu Chatterjee} \hspace{0.25cm}}}
+
+%% Appendix theorem counter
+\usepackage{chngcntr}
+\usepackage{apptools}
+\AtAppendix{\counterwithin{Theorem}{section}}
+
+\numberwithin{equation}{section}
+
+%\DeclareMathOperator*{\vec}{vec}
+\DeclareMathOperator*{\diag}{diag }
+\DeclareMathOperator*{\Tr}{Tr}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+\begin{document}
+
+\newtheorem{Theorem}{Theorem}[section]
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Conjecture}[Theorem]{Conjecture}
+\theoremstyle{definition} \newtheorem{Definition}[Theorem]{Definition}
+\theoremstyle{definition} \newtheorem{Example}[Theorem]{Example}
+
+%\title{Generalized Model Discovery using Statistical Evaluation Maps}
+%\date{}
+%\author{Subhabrata Majumdar, Snigdhansu Chatterjee}
+%\maketitle
+
+\begin{frontmatter}
+\title{Generalized Model Discovery using Statistical Evaluation Maps\thanksref{T1}}
+\runtitle{Generalized Model Discovery with $e$-values}
+%\thankstext{T1}{Footnote to the title with the ``thankstext'' command.}
+
+\begin{aug}
+\author{\fnms{Subhabrata} \snm{Majumdar}\thanksref{t1,t2,m1}\ead[label=e1]{majum010@umn.edu}}
+\and
+\author{\fnms{Snigdhansu} \snm{Chatterjee}\thanksref{t3,m1,m2}\ead[label=e2]{chatt019@umn.edu}}
+%\and
+%\author{\fnms{Third} \snm{Author}\thanksref{t1,m2}
+%\ead[label=e3]{third@somewhere.com}
+%\ead[label=u1,url]{http://www.foo.com}}
+
+\thankstext{t1}{aaa}
+\thankstext{t2}{First supporter of the project}
+\thankstext{t3}{Second supporter of the project}
+\runauthor{Majumdar and Chatterjee}
+
+\affiliation{University of Minnesota Twin Cities}
+
+\address{Ford Hall,\\
+224, Church Street SE\\
+Minneapolis, MN 55414, USA\\
+\printead{e1}\\
+\phantom{E-mail:\ }\printead*{e2}}
+
+%\address{Address of the Third author\\
+%Usually a few lines long\\
+%Usually a few lines long\\
+%\printead{e3}\\
+%\printead{u1}}
+\end{aug}
+
+\begin{abstract}
+The abstract should summarize the contents of the paper.
+It should be clear, descriptive, self-explanatory and not longer
+than 200 words. It should also be suitable for publication in
+abstracting services. Please avoid using math formulas as much as possible.
+
+This is a sample input file.  Comparing it with the output it
+generates can show you how to produce a simple document of
+your own.
+\end{abstract}
+
+\begin{keyword}[class=MSC]
+\kwd[Primary ]{60K35}
+\kwd{60K35}
+\kwd[; secondary ]{60K35}
+\end{keyword}
+
+\begin{keyword}
+\kwd{sample}
+\kwd{\LaTeXe}
+\end{keyword}
+
+\end{frontmatter}
+
+%\begin{abstract}
+%We introduce a one-step model selection technique for general regression estimators
+%to provide a solution to the problem of statistical model selection. Under very general assumptions,
+%this technique correctly identifies the set of non-zero values in the true coefficient (of length p) by
+%comparing only p + 1 models. We start by defining our selection criterion for a class of candidate
+%models larger than considered before, and providing population-level results that differentiate between
+%correct and wrong models within this class. After this we provide results for a general bootstrap
+%scheme to estimate the criterion in a sample setup, and discuss its details for linear and linear mixed
+%models. Simulations and a real data example demonstrate the efficacy of our method over existing
+%model selection strategies in terms of detecting the correct set of predictors as well as accurate out-ofsample predictions. At the end we also discuss some immediate applications and possible extensions
+%of this foundational methodology
+%\end{abstract}
+
+%\section{Introduction}
+\input{Sections/Introduction_02_05_17_1}
+\input{Sections/Frame_of_models}
+\input{Sections/StatisticalEvaluationMaps_and_evalues}
+\input{Sections/ResamplingSection}
+\input{Sections/FastVariableSelection}
+
+%\section{Simulation studies}
+%\section{Application: Linear mixed effect model for Indian Monsoon precipitation}
+%\section{Caveats, conclusions}
+
+\input{Sections/Simulation}
+\input{Sections/IndianMonsoon}
+\input{Sections/CaveatsConclusion}
+\input{Sections/Proofs}
+
+%\input{./Sections/ParametersScientificModels_01_28_17}
+
+%\input{./Sections/FrameOfModels_02_05_17_1}
+%
+%\input{./Sections/TransformationToCommonPlatform_02_05_17_1}
+%
+%\bredbf There are two parallel versions of the next section, combine
+%\_ 1 and \_3
+%\eredbf
+%\input{./Sections/StatisticalEvaluationMaps_02_05_17_1}
+
+% In using BibteX, use wb_stat.bst
+%\bibliographystyle{wb_stat}
+%\bibliography{bibfile}
+
+\newpage 
+
+
+
+\bibliographystyle{apalike}
+\bibliography{MSbib,climate}
+\end{document}

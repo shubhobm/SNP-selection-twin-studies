@@ -1,0 +1,166 @@
+\documentclass[handout,10pt]{beamer}
+\usepackage{SexySlides1,fancyvrb,outlines,pbox}
+\usepackage[round]{natbib}
+\usepackage{hyperref} % link references
+\usepackage[font=footnotesize]{caption} % caption options
+\usepackage{fancyvrb}
+
+\usepackage[tikz]{bclogo}
+\presetkeys{bclogo}{
+ombre=true,
+epBord=3,
+couleur = white,
+couleurBord = black,
+arrondi = 0.2,
+logo=\bctrombone
+}{}
+
+\definecolor{UniBlue}{RGB}{83,121,170}
+\setbeamercolor{title}{fg=UniBlue}
+\setbeamercolor{frametitle}{fg=UniBlue}
+\newcommand{\coluit}{\color{UniBlue}\it}
+\newcommand{\colubf}{\color{UniBlue}\bf}
+
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\Tr}{Tr}
+\DeclareMathOperator*{\argmin}{argmin}
+
+% Row color change in table
+\makeatletter
+\def\zapcolorreset{\let\reset@color\relax\ignorespaces}
+\def\colorrows#1{\noalign{\aftergroup\zapcolorreset#1}\ignorespaces}
+\makeatother
+
+     \setbeamertemplate{footline}
+        {
+      \leavevmode%
+      \hbox{%
+      \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+        \usebeamerfont{author in head/foot}\insertshortauthor~~
+        %(\insertshortinstitute)
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+        \usebeamerfont{title in head/foot}\insertshorttitle
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+        \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+
+    %#turning the next line into a comment, erases the frame numbers
+        %\insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+
+      \end{beamercolorbox}}}%
+
+%\def\logo{%
+%{\includegraphics[height=1cm]{goldy1.png}}
+%}
+%%
+%\setbeamertemplate{footline}
+%{%
+%	\hspace*{.05cm}\logo
+%  \begin{beamercolorbox}[sep=1em,wd=10cm,rightskip=0.5cm]
+%  {footlinecolor,author in head/foot}
+%%    \usebeamercolor{UniBlue}
+%    \vspace{0.1cm}
+%    \insertshortdate \hfill \insertshorttitle
+%    \newline
+%    \insertshortauthor   - \insertshortinstitute
+%    \hfill
+%    \hfill \insertframenumber/\inserttotalframenumber
+%  \end{beamercolorbox}
+%  \vspace*{0.05cm}
+%}
+
+%% smart verbatim
+\fvset{framesep=1cm,fontfamily=courier,fontsize=\scriptsize,framerule=.3mm,numbersep=1mm,commandchars=\\\{\}}
+
+
+\title[Your Short Title]{Selection of causal SNPs in Twin Studies data}
+\author{Subho Majumdar}
+%\institute{Where You're From}
+%\date{Date of Presentation}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\begin{frame}{Objective}
+
+\begin{itemize}
+  \item Most GWAS using family-based designs focus on single-SNP analysis to do association analysis;
+  \item The reason is the difficulty to do association tests for individual SNPs in a multiple-SNP linear mixed model;
+  \item Our objective is to take a variable selection approach while remaining within the mixed model sructure;
+  \item We shall utilize a frugal model selection method to identify SNPs with possible association with the quantitative trait in question.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{The model}
+
+\begin{itemize}
+\item $m$ pedigrees, $i^\text{th}$ pedigree has $n_i$ indivuduals.
+\item $y_{ij} = $ measured phenotype in $j$-th individual of $i$-th pedigree.
+
+\end{itemize}
+
+$$ {\bf Y}_i = \alpha + {\bf G}_i {\bf \beta}_g + {\bf C}_i{\bf \beta}_c + {\bf \epsilon}_i$$
+
+for $i$-th pedigree. The matrices ${\bf G}_i$ and ${\bf C}_i$ contain genotype scores for a number of SNPs and environmental covariate values respectively, for all members of the pedigree. Also
+%
+$$ {\bf \epsilon}_i \sim \mathcal N_{n_i} ({\bf 0}, {\bf V}_i); \quad {\bf V}_i = \Phi \sigma_a^2 + {\bf I}_{n_i} \sigma_e^2 $$
+%
+where $\Phi$ is the known kinship matrix.
+\end{frame}
+
+\begin{frame}{Simulation setup}
+\begin{itemize}
+\item 500 pedigrees, each of size 4: consisting of parents and HZ twins;
+\item $\alpha = 0$, no environmental covariates;
+\item 1000 independent SNPs, with probabilities of dominant alleles chosen from Unif$(0.1,0.3)$;
+\item $\sigma^2_a = 3, \sigma^2_e = 4$;
+\item First 10 SNPs are causal:\\
+{\bf Case 1-} $\beta_{g,1},...,\beta_{g,10} \sim \text{Unif}(0.1, 0.2)$ iid;\\
+{\bf Case 2-} $\beta_{g,1},...,\beta_{g,10} \sim \text{Unif}(0.5, 1)$ iid.
+
+\item Full setup replicated 100 times.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+\begin{table}
+\centering
+\begin{tabular}{l|c|c}
+\textbf{Case} & \textbf{True positive }& \textbf{True negative} \\\hline
+1 & 0.84 (0.13) & 0.21 (0.06) \\
+2 & 0.997 (0.02) & 0.20 (0.05)\\\hline
+\end{tabular}
+\end{table}
+
+\textbf{Runtime:}
+\begin{itemize}
+\item 1 minute for 100 SNPs, ~20 minutes for 1000 SNPs;
+\item Faster than backward deletion on linear model.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Prediction performance}
+\begin{figure}
+\centering
+\includegraphics[width=3in]{../Codes/Rplot1}
+\caption*{(On smaller data)}
+\end{figure}
+\end{frame}
+
+% Commands to include a figure:
+%\begin{figure}
+%\includegraphics[width=\textwidth]{your-figure's-file-name}
+%\caption{\label{fig:your-figure}Caption goes here.}
+%\end{figure}
+
+\end{document}

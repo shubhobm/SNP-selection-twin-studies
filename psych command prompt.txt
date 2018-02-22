@@ -1,0 +1,43 @@
+## from a command line program, e.g. git bash or powershell, ssh into the server: ssh username@snps.psych.umn.edu
+## need to be inside Univ network to do it
+
+## checks processor info
+rocks run host compute-0-0 command="grep '^processor' proc/cpuinfo"
+
+qstat | less
+qstat -f | less
+
+# working in R
+snum = as.numeric(Sys.getenv("PBS_ARRAYID"))
+
+## inside pbs script
+PBS -l nodes=1:ppn=1, mem=10000mb, walltime=24:00:00
+PBS -N i_to_p
+PBS -m ae # for email
+PBS -t 1-5
+cd $PBS_0_WORKDIR
+module load R/3.2.3
+R CMD BATCH --vanila xy.R xy${PBS_ARRAYID}.Rout
+
+## submit a job
+qsub *.pbs
+qsub -e path # where to put error files
+qsub -o path # where to put output files
+# can put into the pbs script as well
+# use aliases when necessary
+# work with gedi5 files... contain MZ twins data
+# gedi/data/GEDI/gedi5_EA_...
+# pos_B37 is position within the ncbi B37 system.. map of a SNP
+
+## how to scp
+scp filename majum010@ssh.stat.umn.edu:/home/majum010
+
+kill 12404
+kill 12405
+kill 12406
+kill 12407
+kill 12408
+kill 12409
+kill 12410
+kill 12411
+

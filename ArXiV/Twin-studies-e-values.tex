@@ -1,0 +1,145 @@
+\documentclass[11pt, letterpaper]{article}
+%\documentclass{statsoc}
+%\documentclass[aos]{imsart}
+%\pdfminorversion=4
+\pdfoutput=1
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{1}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\textwidth}{0.9in}
+\addtolength{\textheight}{0.9in}
+\addtolength{\topmargin}{-.4in}
+
+% put your definitions there:
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{bibentry}
+\usepackage{color}
+\usepackage{epsfig}
+%\usepackage{float}
+\usepackage{framed}
+\usepackage{graphics}
+\usepackage{hyperref}
+\hypersetup{ colorlinks = true, citecolor = blue, urlcolor = blue}
+\usepackage[utf8]{inputenc}
+\usepackage[left, modulo]{lineno}
+\usepackage{lmodern}
+\usepackage{multirow}
+%\usepackage{pdflscape}
+%\usepackage{pdfpages}
+\usepackage{relsize}
+\usepackage{rotating}
+\usepackage{subfigure}
+\usepackage{subfiles}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{wrapfig}
+\usepackage{floatrow}
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+
+\usepackage[round]{natbib}
+% for algorithm
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+%\linenumbers
+
+\usepackage{graphicx,psfrag,epsf}
+\usepackage{enumerate}
+
+\makeatletter
+\@addtoreset{equation}{section}   % Makes \section reset 'equation' counter.
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\makeatother
+
+\makeatletter
+\@addtoreset{figure}{section}
+\renewcommand{\thefigure}{\thesection.\@arabic\c@figure}
+\makeatother
+
+\makeatletter
+\@addtoreset{table}{section}
+\renewcommand\thetable{\thesection.\@arabic\c@table}
+\makeatother
+
+%\theoremstyle{definition}
+%\newtheorem{Example}{Example}[section]
+%
+%\theoremstyle{definition}
+%\newtheorem{Remark}{Remark}[section]
+
+\makeatletter
+\newenvironment{Proof}[1][\proofname]{\par
+  \normalfont
+  \topsep6\p@\@plus6\p@ \trivlist
+  \item[\hskip\labelsep\bfseries
+    #1:]\ignorespaces
+}{%
+  \qed\endtrivlist
+}
+\makeatother
+
+\usepackage{mycommands2}
+\theoremstyle{definition}
+\newtheorem{Algorithm}{Algorithm}
+\newtheorem{Example}{Example}[section]
+%\renewcommand{\baselinestretch}{1.25}
+%\endlocaldefs
+%\pdfminorversion=4
+
+\begin{document}
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+\title{{\bf Simultaneous Selection of Multiple Important Single Nucleotide Polymorphisms in Familial Genome Wide Association Studies Data}}
+\author{Subhabrata Majumdar\thanks{
+The author acknowledges the University of Minnesota  Interdisciplinary Doctoral Fellowship
+program.}, University of Florida\\
+Saonli Basu\thanks{Supported by the National Institute of Health (NIH) under grant R01-DA033958}, Matt McGue and Snigdhansu Chatterjee\thanks{
+Partially  supported by the National Science Foundation (NSF) under grants \# DMS-1622483, \# DMS-1737918.}, \\
+University of Minnesota Twin Cities}
+\date{}
+\maketitle
+
+\begin{abstract}
+We propose a resampling-based fast variable selection technique for selecting important Single Nucleotide Polymorphisms (SNP) in multi-marker mixed effect models used in twin studies. Due to computational complexity, current practice includes testing the effect of one SNP at a time, commonly termed as `single SNP association analysis'.  Joint modeling of genetic variants within a gene or pathway may have better power to detect the relevant genetic variants, hence we adapt our recently proposed framework of $e$-values to address this. In this paper, we propose a computationally efficient approach for single SNP detection in families while utilizing information on multiple SNPs simultaneously. We achieve this through improvements in two aspects. First, unlike other model selection techniques, our method only requires training a model with all possible predictors. Second, we utilize a fast and scalable bootstrap procedure that only requires Monte-Carlo sampling to obtain bootstrapped copies of the estimated vector of coefficients. Using this bootstrap sample, we obtain the $e$-value for each SNP, and select SNPs having $e$-values below a threshold. We illustrate through numerical studies that our method is more effective in detecting SNPs associated with a trait than either single-marker analysis using family data or model selection methods that ignore the familial dependency structure. We also use the $e$-values to perform gene-level analysis in nuclear families and detect several SNPs that have been implicated to be associated with alcohol consumption.
+\end{abstract}
+
+%\begin{keyword}[class=MSC]
+%\kwd[Primary ]{62F07}
+%\kwd{62F40}
+%\kwd[; secondary ]{62F12}
+%\end{keyword}
+
+\noindent%
+{\it Keywords:}  
+%3 to 6 keywords, that do not appear in the title
+Family data; Twin studies; ACE model; Model selection; Resampling; Generalized bootstrap
+\vfill
+
+%\maketitle
+
+\input{Introduction}
+\input{model}
+\input{methods}
+\input{simulation}
+\input{realdata}
+\input{conclusion}
+
+%\section*{Acknowledgements}
+%SM acknowledges the University of Minnesota Interdisciplinary Doctoral Fellowship program.
+%SC is partially supported by the National Science Foundation (NSF) under grants \# DMS-1622483, \# DMS-1737918.
+
+\bibliographystyle{apalike}
+%\bibliographystyle{imsart-number}
+%\bibliography{snpbib}
+\bibliography{Twin-studies-e-values}
+
+\input{Supplementary}
+
+\end{document}

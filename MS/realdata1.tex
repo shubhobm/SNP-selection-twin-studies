@@ -1,0 +1,157 @@
+\section{Analysis of the MCTFR data}
+\label{sec:DataSection}
+
+We now apply the above three techniques on SNPs from the MCTFR dataset. We assume a nuclear pedigree structure, and for simplicity only analyze pedigrees with MZ and DZ twins. After setting aside samples with missing response variables, we end up with 1019 such 4-member families. We look at the effect of genetic factors behind the response variable pertaining to the amount of alcohol consumption, which has previously been found to be highly heritable in this dataset \citep{McGueEtal13}. We decide to analyze SNPs inside some of the most-studied genes with respect to alcohol abuse: GABRA2, ADH1B, ADH1C, SLC6A3, SLC6A4, OPRM1, CYP2E1, DRD2, ALDH2, and COMT \citep{CoombesThesis16} through separate gene-level models. The ADH genes did not contain many SNPs individually, so we decided to club all existing ADH genes (ADH1-ADH7) together in our analysis. We also include sex, birth year, age and generation (parent or offspring) of individuals to control for their potential effect.
+
+We use $E_2$ as the evaluation function here because of its slighty better performance in the simulations. For each gene, We train the LMM in (\ref{eqn:LMMeqn}) on 75\% of randomly selected families, perform our $e$-values procedure for $s = 0.2, 0.4, \ldots, 2.8, 3, t = 0.1, 0.15, \ldots, 0.75, 0.8$; and select the predictor set $\hat \cS (s,t) $ that minimizes fixed effect prediction error on the data from the other 25\% of families.  
+
+%% latex table generated in R 3.3.2 by xtable 1.8-2 package
+%% Tue Apr 18 15:37:10 2017
+%\begin{table}[t]
+%\begin{footnotesize}
+%\centering
+%\begin{tabular}{c|c|p{4in}}
+%    \hline
+%    Gene   & Total/detected & Non-zero SNPs ordered                                                                                                                                                                                                                                                                                                             \\
+%    ~      & SNP            & per position in genome \\  \hline
+%GABRA2 &  11/5 & rs572227(-), rs534459(+), rs502038(-), rs1808851(+), rs279856(-) \\ \hline
+%  ADH &  21/5 & rs17027523(-), rs13103626(+), rs10516430(+), rs12503056(+), rs2004316(-) \\ \hline
+%  SLC6A3 &  18/4 & rs2042449(+), rs464049(-), rs460700(-), rs460000(+) \\ \hline
+%  SLC6A4 &   5/0 & None \\ \hline
+%  OPRM1 &  46/29 & rs9371718(-), rs1937600(+), rs9397637(+), rs12662873(-), rs1316368(+), rs1937587(-), rs6921403(-), rs1937580(+), rs1937645(+), rs1892361(-), rs1937633(+), rs1937631(-), rs12527197(-), rs1892360(-), rs1892356(+), rs1937619(-), rs1332849(-), rs9371749(+), rs9285539(+), rs9322439(-), rs11752884(+), rs4870241(-), rs689219(-), rs9371761(+), rs12199858(+), rs9371762(-), rs612450(+), rs9384159(+), rs6938958(-) \\ \hline
+%  CYP2E1 &   9/5 & rs9419702(-), rs9419624(+), rs7906770(-), rs9419569(+), rs9419629(+) \\ \hline
+%  DRD2 &  17/0 & None\\ \hline
+%  ALDH2 &   5/5 & rs7398343(+), rs7297186(+), rs3803167(+), rs10219736(-), rs3742004(-) \\ \hline
+%  COMT &  15/9 & rs4646312(-), rs165656(-), rs165722(+), rs2239393(-), rs4680(+), rs174699(-), rs165728(+), rs5993891(+), rs2239395(-) \\  \hline
+%\end{tabular}
+%\caption{Table of analyzed genes and detected SNPs in them. Positive/ negative sign indicates type of association found.}
+%\label{table:genetable}
+%\end{footnotesize}
+%\end{table}
+
+% latex table generated in R 3.3.2 by xtable 1.8-2 package
+% Sun Jun 04 12:21:50 2017
+%\begin{table}[t]
+%\begin{footnotesize}
+%\centering
+%\begin{tabular}{c|c|p{3.1in}}
+%    \hline
+%    Gene   & Total/detected & Non-zero SNPs ordered as per position in genome                                                                                                                                                                                                                                                                                                           \\
+%    ~      & SNP            & ~ \\  \hline
+%GABRA2 &  11/8 & rs16859227(-), rs572227(+), rs534459(-), rs502038(+), rs1808851(+), rs279856(-), rs279841(+), rs10805145(+) \\ \hline
+%  ADH &  44/7 & rs12508445(+), rs10005811(-), rs17027456(-), rs10516428(+), rs17027523(+), rs17027530(-), rs3775540(-) \\ \hline
+%  OPRM1 &  47/21 & rs9371718(-), rs9397637(+), rs12662873(-), rs1316368(-), rs6921403(-), rs1937580(-), rs1937645(-), rs1892361(+), rs1937633(-), rs1937631(+), rs12527197(-), rs9371749(+), rs9285539(-), rs9322439(+), rs11752884(+), rs4870241(+), rs689219(+), rs612450(-), rs9384159(-), rs6938958(+), rs581564(+) \\ \hline
+%  CYP2E1 &   9/4 & rs9419702(-), rs9419624(+), rs7906770(-), rs7093241(+) \\ \hline
+%  ALDH2 &   6/5 & rs7398343(+), rs7297186(-), rs3803167(+), rs10219736(-), rs16941437(-) \\ \hline
+%  COMT &  15/8 & rs165656(-), rs165722(-), rs2239393(+), rs4680(+), rs165815(-), rs5993891(-), rs887199(+), rs2239395(+) \\ \hline
+%  SLC6A3 &  18/2 & rs464049(-), rs460700(+) \\ \hline
+%  SLC6A4 &   5/1 & rs8079471(-) \\ \hline
+%  DRD2 &  17/2 & rs12222458(-), rs10750025(+) \\ \hline
+%\end{tabular}
+%\caption{Table of analyzed genes and detected SNPs in them. Positive/ negative sign indicates type of association found, as indicated by the sign of the corresponding coefficient}
+%\label{table:genetable}
+%\end{footnotesize}
+%\end{table}
+
+\begin{table}
+    \begin{tabular}{l|l|lll}
+    \hline
+    Gene   & Total no. & \multicolumn{3}{l}{No. of SNPs detected by }\\\cline{3-5}
+    & of SNPs & $e$-value & RFGLS & mBIC2 \\\hline
+    GABRA2 & 11        & 5       & 0     & 0     \\
+    ADH    & 44        & 3       & 1     & 0     \\
+    OPRM1  & 47        & 25      & 1     & 0     \\
+    CYP2E1 & 9         & 5       & 0     & 0     \\
+    ALDH2  & 6         & 5       & 0     & 1     \\
+    COMT   & 15        & 14      & 0     & 0     \\
+    SLC6A3 & 18        & 4       & 0     & 0     \\
+    SLC6A4 & 5         & 0       & 0     & 0     \\
+    DRD2   & 17        & 0       & 0     & 1     \\\hline
+    \end{tabular}
+    \caption{Table of analyzed genes and detected SNPs in them by the three methods}
+    \label{table:genetable}
+\end{table}
+
+As seen in the comparison in Table~\ref{table:genetable}, the two competing methods detect very small number of SNPs, as compared to our $e$-value based technique. Our method selects all but one SNP in the genes ALDH2 and COMT. These small genes of size 50kb and 30kb, respectively, so that SNPs within them have more chance of being in high Linkage Disequilibrium (LD). On the other hand, it does not select any SNPs in SLC6A4 and DRD2. Variants of these genes have known interaction effects behind alcohol withdrawal-induced seizure \citep{KarpyakEtal10} and bipolar disorder \citep{WangEtal14}. There are multiple of the SNPs we detect (or SNPs situated close to them) being associated with alcohol-related behavioral disorders, which we summarize in Table~\ref{table:genetable2}.
+
+We plot the $90^{\Th}$ quantile $e$-value estimates in Figures~\ref{fig:geneplot1}, \ref{fig:geneplot2} and \ref{fig:geneplot3}. We obtained gene locations, as well as the locations of exons inside 6 of these 9 genes from annotation data extracted from the UCSC Genome Browser database \citep{UCSCdata}. Exon locations were not available for OPRM1, CYP2E1 and DRD2. In general, SNPs tend to get selected in groups with neighboring SNPs, which suggests high LD. Also most of the selected SNPs either overlap or in close proximity to the coding regions of genes, i.e. exons, which underline their functional relevance.
+
+\begin{figure}
+\begin{center}
+
+\begin{tabular}{c}
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_GABRA2"}.pdf}\\
+		(a)\\
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_ADH"}.pdf} \\
+		(b)\\	
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_OPRM1"}.pdf}\\
+		(c)\\	
+\end{tabular}
+
+\caption{Plot of $e$-values for genes analyzed: (a) GABRA2, (b) ADH1 to ADH7, (c) OPRM1. For ease of visualization, $1 - e$-values are plotted in the y-axis.}
+\label{fig:geneplot1}
+
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+
+\begin{tabular}{c}
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_CYP2E1"}.pdf}\\
+		(d)\\
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_ALDH2"}.pdf} \\
+		(e)\\	
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_COMT"}.pdf}\\
+		(f)\\	
+\end{tabular}
+
+\caption{Plot of $e$-values for genes analyzed: (d) CYP2E1, (e) ALDH2, (f) COMT}
+\label{fig:geneplot2}
+
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+
+\begin{tabular}{c}
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_SLC6A3"}.pdf}\\
+		(g)\\
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_SLC6A4"}.pdf} \\
+		(h)\\	
+		\includegraphics[height=.33\textwidth]{{"../gedi5 outputs/plotMZDZ_DRD2"}.pdf}\\
+		(i)\\	
+\end{tabular}
+
+\caption{Plot of $e$-values for genes analyzed: (g) SLC6A3, (h) SLC6A4, (i) DRD2}
+\label{fig:geneplot3}
+
+\end{center}
+\end{figure}
+
+Finally, below are some gene-specific observations. We highlight some interesting findings here, and provide full tables of SNPs with more information from the model outputs in the supplementary material.
+
+{\it GABRA2:} As seen in the plots, the first two SNPs detected are close to two separate exons. The 5th and 6th detected SNPs, rs1808851 and rs279856, are at perfect LD with rs279858 in the larger 7188-individual dataset \citep{IronsThesis12}. This SNP had not been genotyped in our sample, but is the marker in GABRA2 that is most frequently associated in the literature with alcohol abuse \citep{CuiEtal12}. Interestingly, a single SNP RFGLS analysis of the same twin studies data that used Bonferroni correction on marginal $p$-values to detect SNPs had missed these SNPs \citep{IronsThesis12}. This highlights the advantage of our approach.
+
+{\it ADH genes:} Multiple studies have associated rs1229984 in the ADH1B gene (position 99318162 of chromosome 4) with alcohol dependence (\url{https://www.snpedia.com/index.php/Rs1229984}), which as seen in the plot of ADH2 is close to an exon region. Our data does not contain this marker, but detects three SNPs 20 kb upstream of this: rs17027523, rs17027530 and rs3775540. \cite{MacgregorEtal08} found strong association between alcohol consumption and the SNP rs1042026 at position 99307309: this is also close to rs3775540 (position 99304544).
+%  The SNP rs17027523 is interesting: they reside in the uncharacterized long non-coding RNA gene LOC100507053. One previous study \citep{GelernterEtal14, XuEtal15} found significant associations for 5 SNPs in this gene with alcohol consumption for African American population through single-SNP analysis on non-familial GWAS data. Notably, their analysis found a much stronger evidence of the association in African-American part of the sample than the European American part, while our findings are entirely from a Caucasian sample.
+
+{\it OPRM1:} Many of the SNPs analyzed in this gene have very low $e$-values, and tend to cluster together. The minor allele of the SNP rs1799971 (chr 6, position 154039662) has been associated with stronger alcohol cravings (\url{https://www.snpedia.com/index.php/Rs1799971}), and we detect rs12662873 at position 154040810.
+
+{\it CYP2E1:} Four of the 9 SNPs studied are detected through our analysis. Five of them have very high 90-th quantile $e$-values, and are within 10 kb of one another (base pairs 133534822 to 133543210 in chr 10). In the analysis of \cite{LindEtal12} rs4646976 at 133534223 position was most associated with a measure of breath alcohol concentration: this is within our detected region. This study had also detected rs4838767 in the promoter region of CYP2E1 (position 133520114) associated with multiple alcohol consumption measures, but we did not detect the closest SNP to this as having non-zero effect on our response.
+
+{\it ALDH2:} All 6 SNPs we study are close to exons, and 5 get picked up by the $e$-value procedure. While all five are at a lesser base pair position than the well-known SNP rs671 ({\url{https://www.snpedia.com/index.php/Rs671}, position 111803962), one of the SNPs we analyze (rs16941437) is within 10 kb upstream of this SNP.
+
+{\it COMT:} The SNP rs4680 has long been associated with schizophrenia and substance abuse, including alcoholism. A case-control study \citep{VoiseyEtal11} associated rs4680 and rs165774 with alcohol dependence through a SNP-wise chi-squared test, and had these two SNPs in high LD in their study population. Compared to this, in our simultaneous model of all COMT polymorphisms, the more well-known rs4680 has a below threshold $e$-value.% A previous case-control GWAS on unrelated individuals with European and African ancestry that also focused on analysis of well-studied genes also did not find any association between rs4680 and alcohol dependence \citep{OlfsonBierut08}.
+
+{\it SLC6A3:} Our analysis does not detect rs27072, which has been associated with alcohol withdrawal symptoms (\url{https://www.snpedia.com/index.php/Rs27072}). 
+
+{\it SLC6A4:} The SNP rs1042173 has repeatedly been associated with alcohol consumption (\url{https://www.snpedia.com/index.php/Rs1042173}). In our analysis, the 3 SNPs closest to this have low $e$-values. One of them has $e$-value lower than the adaptive threshold $t=0.72$, while the other two narrowly miss it.
+
+{\it DRD2:} Five of the 7 SNPs analyzed have lower $e$-values than the rest, and all of them are in a 10 kb region, between positions 113415976 and 113424042 of chromosome 11. Two of these 5 have $e$-values below the gene-specific threshold. This region is within 3 kb upstream of rs1076560, which has multiple references of association with alcoholism (\url{https://www.snpedia.com/index.php/Rs1076560}). All the three DRD2 SNPs associated with alcoholism in a case-control study on an Eastern Indian study sample \citep{BhaskarEtal10}: rs2734835, rs1116313 and TaqID, are either inside or within 5 kb of this region.% one of them (rs2734835) is also close to rs7937641, while the other two (rs1116313 and TaqID) are within 4 kb of another detected SNP in our analysis: rs10750025.
+
+Finally, most $e$-values for the last 3 genes, i.e. SLC6A3, SLC6A4 and DRD2, are large: indicating weak SNP signals. We found this observation interesting, because variants of these genes have known interaction effects behind alcohol withdrawal-induced seizure \citep{KarpyakEtal10} and bipolar disorder \citep{WangEtal14}, as well as additive effect on the susceptibility to smoking addiction \citep{ErblichEtal05}.
+% For this reason we also ran the $e$-values procedure on the combined set of SNPs from these genes, but did not detect any signal there as well for our sample. %change, look into rs1042173
+ 
+%We detected two SNPs, rs10736470 and rs10750025, within 5 kb of one another. A previous case-control study identified three SNPs at high LD associated with alcoholism in Indian population: rs1116313, TaqID or rs1800498, and rs2734835. The first two of these are in between the two SNPs we detect.
