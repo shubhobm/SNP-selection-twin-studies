@@ -1,0 +1,44 @@
+\begin{thebibliography}{}
+
+\bibitem[Chatterjee and Bose, 2005]{ChatterjeeBose05}
+Chatterjee, S. and Bose, A. (2005).
+\newblock Generalized bootstrap for estimating equations.
+\newblock {\em Ann. Statist.}, 33:414--436.
+
+\bibitem[Cui et~al., 2012]{CuiEtal12}
+Cui, W.~Y., Seneviratne, C., Gu, J., and Li, M.~D. (2012).
+\newblock {Genetics of GABAergic signaling in nicotine and alcohol dependence}.
+\newblock {\em Hum. Genet.}, 131:843--855.
+
+\bibitem[Huang et~al., 2017]{HuangEtal17}
+Huang, C.-C., Kuo, S.-C., Weh, Y.-W., et~al. (2017).
+\newblock {The SLC6A3 gene possibly affects susceptibility to late-onset
+  alcohol dependence but not specific personality traits in a Han Chinese
+  population}.
+\newblock {\em PLoS ONE}, 12(2):e0171170.
+
+\bibitem[Irons, 2012]{IronsThesis12}
+Irons, D.~E. (2012).
+\newblock {\em Characterizing specific genetic and environmental influences on
+  alcohol use}.
+\newblock PhD thesis, University of Minnesota.
+
+\bibitem[Lind et~al., 2012]{LindEtal12}
+Lind, P.~A., Macgregor, S., Heath, A.~C., and Madden, P. A.~F. (2012).
+\newblock {Association between {\it in vivo} alcohol metabolism and genetic
+  variation in pathways that metabolize the carbon skeleton of ethanol and NADH
+  reoxidation in the Alcohol Challenge Twin Study}.
+\newblock {\em Alcohol Clin. Exp. Res.}, 36:2074--2085.
+
+\bibitem[Majumdar and Chatterjee, 2017]{MajumdarChatterjee17}
+Majumdar, S. and Chatterjee, S. (2017).
+\newblock {Fast and General Model Selection using Data Depth and Resampling}.
+\newblock \url{https://arxiv.org/abs/1706.02429}.
+
+\bibitem[Voisey et~al., 2011]{VoiseyEtal11}
+Voisey, J., Swagell, C.~D., Hughes, I.~P., et~al. (2011).
+\newblock {A novel SNP in COMT is associated with alcohol dependence but not
+  opiate or nicotine dependence: a case control study}.
+\newblock {\em Behav. Brain Funct.}, 7(51).
+
+\end{thebibliography}

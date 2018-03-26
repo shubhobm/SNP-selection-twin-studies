@@ -1,0 +1,443 @@
+\documentclass[handout,10pt]{beamer}
+\usepackage{SexySlides1,fancyvrb,outlines,pbox}
+\usepackage[round]{natbib}
+\usepackage{hyperref} % link references
+\hypersetup{colorlinks = true, citecolor = blue, urlcolor = blue}
+
+\usepackage[font=footnotesize]{caption} % caption options
+\usepackage{fancyvrb}
+
+\usepackage[tikz]{bclogo}
+\presetkeys{bclogo}{
+ombre=true,
+epBord=3,
+couleur = white,
+couleurBord = black,
+arrondi = 0.2,
+logo=\bctrombone
+}{}
+
+\definecolor{UniBlue}{RGB}{83,121,170}
+\setbeamercolor{title}{fg=UniBlue}
+\setbeamercolor{frametitle}{fg=UniBlue}
+\newcommand{\coluit}{\color{UniBlue}\it}
+\newcommand{\colubf}{\color{UniBlue}\bf}
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\Tr}{Tr}
+\DeclareMathOperator*{\argmin}{argmin}
+
+% Row color change in table
+\makeatletter
+\def\zapcolorreset{\let\reset@color\relax\ignorespaces}
+\def\colorrows#1{\noalign{\aftergroup\zapcolorreset#1}\ignorespaces}
+\makeatother
+
+     \setbeamertemplate{footline}
+        {
+      \leavevmode%
+      \hbox{%
+      \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+        \usebeamerfont{author in head/foot}\insertshortauthor~~
+        %(\insertshortinstitute)
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+        \usebeamerfont{title in head/foot}\insertshorttitle
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+        \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+
+    %#turning the next line into a comment, erases the frame numbers
+        %\insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+
+      \end{beamercolorbox}}}%
+
+%\def\logo{%
+%{\includegraphics[height=1cm]{goldy1.png}}
+%}
+%%
+%\setbeamertemplate{footline}
+%{%
+%	\hspace*{.05cm}\logo
+%  \begin{beamercolorbox}[sep=1em,wd=10cm,rightskip=0.5cm]
+%  {footlinecolor,author in head/foot}
+%%    \usebeamercolor{UniBlue}
+%    \vspace{0.1cm}
+%    \insertshortdate \hfill \insertshorttitle
+%    \newline
+%    \insertshortauthor   - \insertshortinstitute
+%    \hfill
+%    \hfill \insertframenumber/\inserttotalframenumber
+%  \end{beamercolorbox}
+%  \vspace*{0.05cm}
+%}
+
+%% smart verbatim
+\fvset{framesep=1cm,fontfamily=courier,fontsize=\scriptsize,framerule=.3mm,numbersep=1mm,commandchars=\\\{\}}
+
+\title[Simultaneous Selection of Multiple SNPs]
+{
+Simultaneous Selection of Multiple Important Single Nucleotide Polymorphisms in Familial Genome Wide Association Studies Data}
+
+\author[Majumdar {\it et al}]{Subhabrata Majumdar, University of Florida\\
+and\\
+Saonli Basu, Matt McGue and Snigdhansu Chatterjee\\
+University of Minnesota Twin Cities\\
+\vspace{1em}
+March 26, 2018} 
+
+%\vspace{.5cm}
+%\includegraphics[height=.5cm]{UMNlogo}}
+
+\date [March 26, 2018]
+
+%%%%%%%List Outline in the beginning of each section.
+\AtBeginSection[] {
+   \begin{frame}
+       \frametitle{Outline}
+       \tableofcontents[currentsection]
+   \end{frame}
+}
+
+%-------------------------------------------------------------------
+\begin{document}
+
+%\begin{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame{ \titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Outline}
+\begin{itemize}
+\item Motivation
+
+\item Statistical model
+
+\item The $e$-values framework
+
+\item Simulation study
+
+\item The Minnesota Twin Studies data example
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Motivation}
+
+\centering
+{\large
+{\colrbf Simultaneous} Selection of Multiple Important Single Nucleotide Polymorphisms in {\colrbf Familial} Genome Wide Association Studies Data
+}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Motivation}
+
+\vspace{1em}
+Genome-Wide Association Studies (GWAS) based on families are used in behavioral genetics to control for environmental variation, thus requiring smaller sample size to detect Single Nucleotide Polymorphisms (SNP) responsible behind traits like alcoholism and drug addiction, and also to quantify gene-environment interaction.
+
+\vspace{1em}
+Two challenges:
+
+\begin{enumerate}
+\item SNPs highly correlated, weak signals of individual SNPs;
+
+\item Need to use mixed models to account for within-family dependence.
+\end{enumerate}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Objective}
+We propose a computationally efficient approach for SNP detection in families while utilizing information on multiple SNPs simultaneously.
+
+\vspace{1em}
+There are two state-of-the-art approaches:
+
+\begin{itemize}
+\item Perform single-SNP analysis and then correct for multiple testing. This loses power.
+
+\item Group-based association test (SKAT etc.) that test for whether a group of SNPs is associated with the phenotype. They do not generally prioritize within the group and are unable to detect individual SNPs associated with the trait.
+\end{itemize}
+
+We use our recently proposed framework of $e$-values to improve upon that.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Statistical model}
+%
+\begin{align*}
+& \bfY_i = \alpha + \bfG_i \bfbeta_g + \bfC_i \bfbeta_c + \bfepsilon_i\\
+& \bfepsilon_i \sim \cN_{n_i} ({\bf 0}, \bfV_i); \quad \bfV_i = \sigma_a^2 \bfPhi_i + \sigma_c^2 {\bf 1} {\bf 1}^T + \sigma_e^2 \bfI_{n_i}
+\end{align*}
+%
+
+\begin{itemize}
+
+\item Total $m$ families, with the $i$-th pedigree containing $n_i$ individuals;
+
+\vspace{1em}
+\item $\bfY_i = (y_{i 1}, \ldots, y_{i n_i})^T $ are the quantitative trait values for individuals in $i$-th pedigree, $\bfG_i \in \BR^{ n_i \times p_s}$ containing their genotypes for a bunch of SNPs, $\bfC_i \in \BR^{ n_i \times p}$ contain the data on individual-specific covariates;
+
+\vspace{1em}
+\item Three variance components correspond to polygenic effect due to other SNPs, shared environment effect and individual-specific effects. This is called the {\colbbf ACE model}.
+
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{The relationship matrix $\bfPhi_i$}
+%
+\begin{minipage}{.63\textwidth}
+%
+\begin{align*}
+& \bfPhi_{MZ} = \begin{bmatrix}
+1 & 0 & 1/2 & 1/2 \\
+0 & 1 & 1/2 & 1/2 \\
+1/2 & 1/2 & 1 & 1\\
+1/2 & 1/2 & 1 & 1
+\end{bmatrix},\\
+& \bfPhi_{DZ} = \begin{bmatrix}
+1 & 0 & 1/2 & 1/2 \\
+0 & 1 & 1/2 & 1/2 \\
+1/2 & 1/2 & 1 & 1/2\\
+1/2 & 1/2 & 1/2 & 1
+\end{bmatrix},\vspace{1em}
+\\
+& \bfPhi_{Adopted} = \bfI_4
+\end{align*}
+%
+\end{minipage}
+%
+\begin{minipage}{.34\textwidth}
+$\bfPhi_i$ depends on the type of the $i$-th family:
+
+\vspace{1em}
+
+MZ = family with identical or monozygous twins,
+
+DZ = family with identical or dizygous twins.
+
+\end{minipage}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{The $e$-values framework}
+
+\begin{itemize}
+\item The recently proposed $e$-values are a fast and general method for best subset variable selection \citep{MajumdarChatterjee17}.
+
+\item The $e$-values are able to compare sampling distributions of coefficient vectors coresponding to two statistical models.
+
+\item They are based on point-to-distribution distance measures, which we call {\it evaluation functions} $E(\bfx, [\bfX])$, $[\bfX]$ denoting distribution of a random variable $\bfX$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{ACE models and $e$-values}
+
+\begin{enumerate}
+\item Estimate the full model coefficient, say $\hat \bfbeta_g \equiv \hat \bfbeta$ (by R package \texttt{regress} )
+
+\item Obtain its bootstrap distribution: $[\hat \bfbeta]$;
+
+\item Replace the $j$-th coefficient with 0, name it $\hat \bfbeta_{-j}$. Do the same for its bootstrap distribution, say $[\hat \bfbeta_{-j}]$. Repeat for all $j$;
+
+\item $e$-value of $j$-th SNP = tail probability of the $q$-th quantile of $[ E (\hat \bfbeta_{-j}, [ \hat \bfbeta]) ]$ with respect to $[ E (\hat \bfbeta, [ \hat \bfbeta]) ]$;
+
+\item Select $j$-th SNP if its $e$-value is less than $t q$, for some $0<t<1$.
+\end{enumerate}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Advantages}
+
+\begin{itemize}
+\item Need to train one single model-- saves a lot of computation time for mixed models;
+\vspace{1em}
+
+\item SNPs are selected taking the effects of {\it all} other SNPs into account;
+\vspace{1em}
+
+\item We use a fast generalized bootstrap \citep{ChatterjeeBose05} for the calculation steps, which is based on monte carlo random sampling.
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Simulation setup}
+\begin{itemize}
+\item 250 pedigrees, each of size 4: consisting of parents and MZ twins;
+\item $\alpha = 0$, no environmental covariates;
+\item 50 SNPs in correlated blocks of 6,4,6,4 and 30: MAF of SNPs in the blocks 0.2, 0.4, 0.4, 0.25 and 0.25;
+\item $\sigma^2_a = 4, \sigma^2_c = 1, \sigma^2_e = 1$;
+\item First SNP of first 4 blocks are causal: each having heritability (a measure of magnitude of non-zero effect) $h/6 \%$;
+\item Full setup replicated 1000 times.
+
+\vspace{1em}
+\item Methods compared:\\
+{\colb mBIC2} - Variant of BIC that control false discovery rate at 0.05;\\
+{\colb RFGLS} - Fast method of fitting single-SNP ACE models. Do Benjamini-Hochberg correction on $p$-values to control FDR at 0.05.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Simulation results}
+
+% latex table generated in R 3.3.2 by xtable 1.8-2 package
+% Sun Apr 16 18:24:09 2017
+% latex table generated in R 3.3.2 by xtable 1.8-2 package
+% Sun Apr 16 18:24:48 2017
+\begin{table}
+\centering
+\begin{scriptsize}
+    \begin{tabular}{c|l|lllllll}
+    \hline
+    \multicolumn{2}{c|}{Method}          & $h = 10$    & $h = 7$     & $h = 5$     & $h = 3$     & $h = 2$     & $h = 1$     & $h = 0$     \\ \hline
+    \multicolumn{2}{c|}{mBIC2}           & 0.79/0.99 & 0.59/0.99 & 0.41/0.99 & 0.2/0.99  & 0.11/0.99 & 0.05/0.99 & -/0.99 \\
+    \multicolumn{2}{c|}{RFGLS+BH}        & 0.95/0.92 & 0.82/0.95 & 0.62/0.97 & 0.29/0.98 & 0.14/0.99 & 0.04/1    & -/1       \\ \hline
+    ~        & $t = 0.8$    & 0.97/0.98 & 0.9/0.97  & 0.79/0.96 & 0.54/0.96 & 0.34/0.97 & 0.15/0.98 & -/0.99 \\
+    ~        & $t = 0.74$   & 0.96/0.98 & 0.88/0.97 & 0.75/0.97 & 0.48/0.97 & 0.29/0.98 & 0.12/0.98 & -/0.99 \\
+    $E_2$    & $t = 0.68$   & \textbf{0.95/0.99} & 0.87/0.98 & 0.72/0.98 & 0.45/0.98 & 0.26/0.98 & 0.1/0.99  & -/0.99 \\
+    ~        & $t = 0.62$   & \textbf{0.95/0.99} & 0.84/0.98 & \textbf{0.68/0.98} & \textbf{0.4/0.99}  & \textbf{0.22/0.99} & 0.09/0.99 & -/0.99    \\
+    ~        & $t = 0.56$   & 0.94/0.99 & \textbf{0.82/0.99} & \textbf{0.65/0.99} & \textbf{0.36/0.99} & \textbf{0.19/0.99} & \textbf{0.07/1}    & \textbf{-/1  }     \\
+    ~        & $t = 0.5$    & 0.92/0.99 & 0.79/0.99 & 0.6/0.99  & \textbf{0.31/0.99} & \textbf{0.16/1}    & \textbf{0.05/1}    & \textbf{-/1  }     \\ \hline
+\end{tabular}
+\end{scriptsize}
+\caption{Average True Positive (TP)/ True Negative (TN) rates for mBIC2, RFGLS+BH and the $e$-values method with $E_2$ as evaluation maps and different values of $t$ over 1000 replications}
+\end{table}
+
+$$
+E_2 (\bfx, [ \bfX]) = \exp \left[ - \left\| \frac{\bfx - \BE \bfX }{ \sqrt { \diag  (\BV \bfX) }}  \right\| \right]
+$$
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Analyzing the Minnesota Twin Studies data}
+
+\begin{itemize}
+\item Analyze data on families with MZ and DZ twins: 682 families;
+
+\item Response variable: amount of alcohol consumption;
+
+\item Look at models specific to well-studied genes for alcoholism: GABRA2, ADH1B,
+ADH1C, SLC6A3, SLC6A4, OPRM1, CYP2E1, DRD2, ALDH2, and COMT;
+
+\item Group together ADH genes as individual genes have very small number of SNPs.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Number of detected SNPs}
+
+\begin{table}
+\begin{footnotesize}
+    \begin{tabular}{l|l|lll}
+    \hline
+    Gene   & Total no. & \multicolumn{3}{l}{No. of SNPs detected by }\\\cline{3-5}
+    & of SNPs & $e$-value & RFGLS+BH & mBIC2 \\\hline
+    GABRA2 & 11        & 5       & 0     & 0     \\
+    ADH    & 44        & 3       & 1     & 0     \\
+    OPRM1  & 47        & 25      & 1     & 0     \\
+    CYP2E1 & 9         & 5       & 0     & 0     \\
+    ALDH2  & 6         & 5       & 0     & 1     \\
+    COMT   & 15        & 14      & 0     & 0     \\
+    SLC6A3 & 18        & 4       & 0     & 0     \\
+    SLC6A4 & 5         & 0       & 0     & 0     \\
+    DRD2   & 17        & 0       & 0     & 1     \\\hline
+    \end{tabular}
+\end{footnotesize}
+\caption{Table of analyzed genes and number of detected SNPs in them by the three methods}
+\label{table:genetable}
+\end{table}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Summary of detected SNPs}
+\begin{table}
+\begin{footnotesize}
+    \begin{tabular}{l|p{2in}|p{1.5in}}
+    \hline
+    Gene      & Detected SNPs with                              & Reference for \\
+    & known associations & associated SNP                              \\\hline
+    GABRA2    & rs1808851, rs279856: close to rs279858                         & \cite{CuiEtal12}                                                    \\\hline
+    ADH genes & rs17027523: 20kb upstream of rs1229984 & Multiple studies (\url{https://www.snpedia.com/index.php/Rs1229984}) \\\hline
+    OPRM1     & rs12662873: 1 kb upstream of rs1799971                            & Multiple studies (\url{https://www.snpedia.com/index.php/Rs1799971}) \\\hline
+    CYP2E1    & rs9419624: 600b downstream of rs4646976; rs9419702: 10kb upstream of rs4838767 & \cite{LindEtal12}\\\hline
+    ALDH2     & rs16941437: 10kb upstream of rs671                               & Multiple studies (\url{https://www.snpedia.com/index.php/Rs671}) \\\hline
+    COMT      & rs4680, rs165774                                               & \cite{VoiseyEtal11}                                                                               \\\hline
+    SLC6A3    & rs464049                                                       & \cite{HuangEtal17}\\\hline
+    \end{tabular}
+    \caption{Table of detected SNPs with known references}
+    \label{table:genetable2}
+\end{footnotesize}
+\end{table}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{GABRA2}
+
+\begin{figure}
+\includegraphics[width=.9\textwidth]{{"plotMZDZ_GABRA2"}.pdf}
+\end{figure}
+
+Detects rs1808851 and rs279856, which have very high correlation with the well-known rs279858. This was missed by a previous analysis \citep{IronsThesis12}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{References}
+
+{\scriptsize
+\bibliographystyle{apalike}
+\bibliography{snpbib}
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Future work}
+\begin{itemize}
+\item Extending to group SNP detection;
+
+\item Extending to analyzing SNPs from multiple genes- detect SNPs inside a gene, then detect significant genes among a group of genes;
+
+\item High-dimensional situations.
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\centering\huge
+\textcolor{UniBlue}{\textbf{THANK YOU!}}
+
+\vspace{-.5em}
+{\scriptsize Acknowledgements: NSF grant IIS-1029711, University of Minnesota Interdisciplinary Doctoral Fellowship}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
